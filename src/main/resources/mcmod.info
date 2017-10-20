@@ -5,7 +5,7 @@
   "description": "Allows custom progression for items and blocks.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "https://minecraft.curseforge.com/projects/itemstages",
+  "url": "https://minecraft.curseforge.com/projects/item-stages",
   "updateUrl": "",
   "authorList": ["Darkhax"],
   "credits": "Darkosto for the idea!",
