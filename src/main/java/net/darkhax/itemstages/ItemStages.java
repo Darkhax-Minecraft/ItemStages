@@ -11,13 +11,18 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Mod(modid = "itemstages", name = "Item Stages", version = "@VERSION@", dependencies = "required-after:bookshelf@[2.1.443,);required-after:gamestages@[1.0.63,);required-after:crafttweaker@[2.7.2.,)", certificateFingerprint = "@FINGERPRINT@")
 public class ItemStages {
@@ -26,16 +31,22 @@ public class ItemStages {
 
     public static final Map<Item, ItemEntry> ITEM_STAGES = new HashMap<>();
 
+    private ItemEntry getEntry (ItemStack stack) {
+
+        final ItemEntry entry = ITEM_STAGES.get(stack.getItem());
+        return entry != null && entry.matches(stack) ? entry : null;
+    }
+
     private boolean isRestricted (EntityPlayer player, ItemStack stack) {
 
         final IStageData stageData = PlayerDataHandler.getStageData(player);
 
         if (stageData != null && !stack.isEmpty()) {
 
-            final ItemEntry entry = ITEM_STAGES.get(stack.getItem());
+            final ItemEntry entry = this.getEntry(stack);
 
             // No restrictions
-            if (entry == null || !entry.matches(stack)) {
+            if (entry == null) {
 
                 return false;
             }
@@ -69,6 +80,23 @@ public class ItemStages {
                 player.sendMessage(new TextComponentString("You dropped the " + stack.getDisplayName() + "! Further progression is required."));
                 player.dropItem(true);
                 return;
+            }
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onTooltip (ItemTooltipEvent event) {
+
+        if (!event.getItemStack().isEmpty() && this.isRestricted(event.getEntityPlayer(), event.getItemStack())) {
+
+            final ItemEntry entry = this.getEntry(event.getItemStack());
+
+            if (entry != null) {
+
+                event.getToolTip().clear();
+                event.getToolTip().add(TextFormatting.WHITE + "Restricted Item");
+                event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + "Further progression is required to access this item. You need stage " + entry.getStage() + " first.");
             }
         }
     }
