@@ -7,6 +7,9 @@ import net.darkhax.bookshelf.lib.LoggingHelper;
 import net.darkhax.bookshelf.util.PlayerUtils;
 import net.darkhax.gamestages.capabilities.PlayerDataHandler;
 import net.darkhax.gamestages.capabilities.PlayerDataHandler.IStageData;
+import net.darkhax.gamestages.event.GameStageEvent;
+import net.darkhax.gamestages.event.StageDataEvent;
+import net.darkhax.itemstages.jei.PluginItemStages;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -31,19 +34,19 @@ public class ItemStages {
 
     public static final Map<Item, ItemEntry> ITEM_STAGES = new HashMap<>();
 
-    private ItemEntry getEntry (ItemStack stack) {
+    public static ItemEntry getEntry (ItemStack stack) {
 
         final ItemEntry entry = ITEM_STAGES.get(stack.getItem());
         return entry != null && entry.matches(stack) ? entry : null;
     }
 
-    private boolean isRestricted (EntityPlayer player, ItemStack stack) {
+    public static boolean isRestricted (EntityPlayer player, ItemStack stack) {
 
         final IStageData stageData = PlayerDataHandler.getStageData(player);
 
         if (stageData != null && !stack.isEmpty()) {
 
-            final ItemEntry entry = this.getEntry(stack);
+            final ItemEntry entry = getEntry(stack);
 
             // No restrictions
             if (entry == null) {
@@ -75,7 +78,7 @@ public class ItemStages {
             final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
             final ItemStack stack = player.getHeldItemMainhand();
 
-            if (!stack.isEmpty() && this.isRestricted(player, stack)) {
+            if (!stack.isEmpty() && isRestricted(player, stack)) {
 
                 player.sendMessage(new TextComponentString("You dropped the " + stack.getDisplayName() + "! Further progression is required."));
                 player.dropItem(true);
@@ -88,9 +91,9 @@ public class ItemStages {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onTooltip (ItemTooltipEvent event) {
 
-        if (!event.getItemStack().isEmpty() && this.isRestricted(event.getEntityPlayer(), event.getItemStack())) {
+        if (!event.getItemStack().isEmpty() && isRestricted(event.getEntityPlayer(), event.getItemStack())) {
 
-            final ItemEntry entry = this.getEntry(event.getItemStack());
+            final ItemEntry entry = getEntry(event.getItemStack());
 
             if (entry != null) {
 
@@ -99,6 +102,27 @@ public class ItemStages {
                 event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + "Further progression is required to access this item. You need stage " + entry.getStage() + " first.");
             }
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onGamestageSync (StageDataEvent.SyncRecieved event) {
+
+        PluginItemStages.syncHiddenItems(event.getPlayer());
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onStageAdded (GameStageEvent.Added event) {
+
+        PluginItemStages.syncHiddenItems(event.getPlayer());
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onStageRemoved (GameStageEvent.Removed event) {
+
+        PluginItemStages.syncHiddenItems(event.getPlayer());
     }
 
     @EventHandler
