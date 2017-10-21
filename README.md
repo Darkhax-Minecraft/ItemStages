@@ -17,6 +17,7 @@ When something is restricted by this mod, several things will happen to prevent 
 
 - Holding a restricted item will cause it to be dropped immediately.
 - The tooltip will be replaced with a restricted message.
+- Items will be hidden in JEI if JEI is installed. 
 - More to come!
 
 ## Example Script
