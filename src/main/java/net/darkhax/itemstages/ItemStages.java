@@ -18,6 +18,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
@@ -108,21 +109,30 @@ public class ItemStages {
     @SubscribeEvent
     public void onGamestageSync (StageDataEvent.SyncRecieved event) {
 
-        PluginItemStages.syncHiddenItems(event.getPlayer());
+        if (Loader.isModLoaded("jei")) {
+          
+            PluginItemStages.syncHiddenItems(event.getPlayer());
+        }
     }
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onStageAdded (GameStageEvent.Added event) {
 
-        PluginItemStages.syncHiddenItems(event.getPlayer());
+        if (Loader.isModLoaded("jei")) {
+            
+            PluginItemStages.syncHiddenItems(event.getPlayer());
+        }
     }
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onStageRemoved (GameStageEvent.Removed event) {
 
-        PluginItemStages.syncHiddenItems(event.getPlayer());
+        if (Loader.isModLoaded("jei")) {
+            
+            PluginItemStages.syncHiddenItems(event.getPlayer());
+        }
     }
 
     @EventHandler
