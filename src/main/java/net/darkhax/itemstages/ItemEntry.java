@@ -9,6 +9,7 @@ public class ItemEntry {
     private final String stage;
     private final Item item;
     private final int meta;
+    private final ItemStack stack;
 
     public ItemEntry (String stage, ItemStack stack) {
 
@@ -20,6 +21,7 @@ public class ItemEntry {
         this.stage = stage;
         this.item = item;
         this.meta = meta;
+        this.stack = new ItemStack(item, 1, meta);
     }
 
     public String getStage () {
@@ -40,5 +42,10 @@ public class ItemEntry {
     public boolean matches (ItemStack stack) {
 
         return stack.getItem() == this.item && (stack.getMetadata() == this.meta || this.meta == OreDictionary.WILDCARD_VALUE) && !stack.isEmpty();
+    }
+
+    public ItemStack getStack () {
+
+        return this.stack;
     }
 }
