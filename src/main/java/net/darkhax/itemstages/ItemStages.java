@@ -92,7 +92,6 @@ public class ItemStages {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onTooltip (ItemTooltipEvent event) {
 
-        System.out.println("Render");
         if (!event.getItemStack().isEmpty() && isRestricted(event.getEntityPlayer(), event.getItemStack())) {
 
             final ItemEntry entry = getEntry(event.getItemStack());
@@ -111,7 +110,7 @@ public class ItemStages {
     public void onGamestageSync (StageDataEvent.SyncRecieved event) {
 
         if (Loader.isModLoaded("jei")) {
-          
+
             PluginItemStages.syncHiddenItems(event.getPlayer());
         }
     }
@@ -121,7 +120,7 @@ public class ItemStages {
     public void onStageAdded (GameStageEvent.Added event) {
 
         if (Loader.isModLoaded("jei")) {
-            
+
             PluginItemStages.syncHiddenItems(event.getPlayer());
         }
     }
@@ -131,7 +130,7 @@ public class ItemStages {
     public void onStageRemoved (GameStageEvent.Removed event) {
 
         if (Loader.isModLoaded("jei")) {
-            
+
             PluginItemStages.syncHiddenItems(event.getPlayer());
         }
     }
