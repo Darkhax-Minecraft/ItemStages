@@ -34,6 +34,8 @@ public class PluginItemStages implements IModPlugin {
     @SideOnly(Side.CLIENT)
     public static void syncHiddenItems (EntityPlayer player) {
 
+        final long time = System.currentTimeMillis();
+        ItemStages.LOG.info("Starting a JEI Sync");
         final Set<ItemStack> toBlacklist = new HashSet<>();
         final Set<ItemStack> toWhitelist = new HashSet<>();
 
@@ -61,5 +63,7 @@ public class PluginItemStages implements IModPlugin {
 
             ingredientRegistry.addIngredientsAtRuntime(ItemStack.class, new ArrayList<>(toWhitelist));
         }
+        
+        ItemStages.LOG.info("Finished JEI Sync, took " + (System.currentTimeMillis() - time) + "ms. " + toBlacklist.size() + " hidden, " + toWhitelist.size() + " shown.");
     }
 }
