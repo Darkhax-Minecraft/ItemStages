@@ -11,6 +11,7 @@ import net.darkhax.gamestages.event.GameStageEvent;
 import net.darkhax.gamestages.event.StageDataEvent;
 import net.darkhax.itemstages.jei.PluginItemStages;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
@@ -43,9 +44,15 @@ public class ItemStages {
 
     public static boolean isRestricted (EntityPlayer player, ItemStack stack) {
 
+        // Air is not restricted
+        if (stack.isEmpty()) {
+
+            return false;
+        }
+
         final IStageData stageData = PlayerDataHandler.getStageData(player);
 
-        if (stageData != null && !stack.isEmpty()) {
+        if (stageData != null) {
 
             final ItemEntry entry = getEntry(stack);
 
@@ -65,6 +72,11 @@ public class ItemStages {
         return true;
     }
 
+    private static void sendDropMessage (EntityPlayer player, ItemStack stack) {
+
+        player.sendMessage(new TextComponentString("You dropped the " + stack.getDisplayName() + "! Further progression is required."));
+    }
+
     @Mod.EventHandler
     public void preInit (FMLPreInitializationEvent event) {
 
@@ -77,13 +89,17 @@ public class ItemStages {
         if (PlayerUtils.isPlayerReal(event.getEntityLiving())) {
 
             final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-            final ItemStack stack = player.getHeldItemMainhand();
 
-            if (!stack.isEmpty() && isRestricted(player, stack)) {
+            for (final EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
 
-                player.sendMessage(new TextComponentString("You dropped the " + stack.getDisplayName() + "! Further progression is required."));
-                player.dropItem(true);
-                return;
+                final ItemStack stack = player.getItemStackFromSlot(slot);
+
+                if (isRestricted(player, stack)) {
+
+                    player.setItemStackToSlot(slot, ItemStack.EMPTY);
+                    player.dropItem(stack, false);
+                    sendDropMessage(player, stack);
+                }
             }
         }
     }
