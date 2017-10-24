@@ -63,7 +63,7 @@ public class PluginItemStages implements IModPlugin {
 
             ingredientRegistry.addIngredientsAtRuntime(ItemStack.class, new ArrayList<>(toWhitelist));
         }
-        
+
         ItemStages.LOG.info("Finished JEI Sync, took " + (System.currentTimeMillis() - time) + "ms. " + toBlacklist.size() + " hidden, " + toWhitelist.size() + " shown.");
     }
 }
