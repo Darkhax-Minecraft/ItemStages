@@ -91,6 +91,12 @@ public class ItemStages {
 
             final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
 
+            // Exit early if creative mode.
+            if (player.isCreative()) {
+                
+                return;
+            }
+            
             for (final EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
 
                 final ItemStack stack = player.getItemStackFromSlot(slot);
