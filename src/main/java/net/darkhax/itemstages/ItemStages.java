@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.darkhax.bookshelf.lib.LoggingHelper;
+import net.darkhax.bookshelf.util.GameUtils;
 import net.darkhax.bookshelf.util.PlayerUtils;
 import net.darkhax.gamestages.capabilities.PlayerDataHandler;
 import net.darkhax.gamestages.capabilities.PlayerDataHandler.IStageData;
@@ -125,7 +126,7 @@ public class ItemStages {
     @SubscribeEvent
     public void onGamestageSync (StageDataEvent.SyncRecieved event) {
 
-        if (Loader.isModLoaded("jei")) {
+        if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
 
             PluginItemStages.syncHiddenItems(event.getPlayer());
         }
@@ -135,7 +136,7 @@ public class ItemStages {
     @SubscribeEvent
     public void onStageAdded (GameStageEvent.Added event) {
 
-        if (Loader.isModLoaded("jei")) {
+        if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
 
             PluginItemStages.syncHiddenItems(event.getPlayer());
         }
@@ -145,7 +146,7 @@ public class ItemStages {
     @SubscribeEvent
     public void onStageRemoved (GameStageEvent.Removed event) {
 
-        if (Loader.isModLoaded("jei")) {
+        if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
 
             PluginItemStages.syncHiddenItems(event.getPlayer());
         }
