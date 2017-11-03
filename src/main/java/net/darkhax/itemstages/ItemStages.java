@@ -50,7 +50,7 @@ public class ItemStages {
 
             final ItemEntry existing = ITEM_STAGES.get(item);
 
-            for (final Entry<String, ItemStack[]> entries : entry.ENTRIES.entrySet()) {
+            for (final Entry<String, ItemStack[]> entries : entry.entries.entrySet()) {
 
                 existing.add(entries.getKey(), entries.getValue());
             }

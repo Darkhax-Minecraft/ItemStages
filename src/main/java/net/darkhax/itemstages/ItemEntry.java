@@ -11,16 +11,16 @@ import net.minecraft.item.ItemStack;
 
 public class ItemEntry {
 
-    public final Map<String, ItemStack[]> ENTRIES = new HashMap<>();
+    public final Map<String, ItemStack[]> entries = new HashMap<>();
 
     public ItemEntry (String stage, ItemStack[] stacks) {
 
-        this.ENTRIES.put(stage, stacks);
+        this.entries.put(stage, stacks);
     }
 
     public String getStage (ItemStack stack) {
 
-        for (final Entry<String, ItemStack[]> entry : this.ENTRIES.entrySet()) {
+        for (final Entry<String, ItemStack[]> entry : this.entries.entrySet()) {
 
             for (final ItemStack entryStack : entry.getValue()) {
 
@@ -36,7 +36,7 @@ public class ItemEntry {
 
     public boolean hasStack (ItemStack stack) {
 
-        for (final Entry<String, ItemStack[]> entry : this.ENTRIES.entrySet()) {
+        for (final Entry<String, ItemStack[]> entry : this.entries.entrySet()) {
 
             for (final ItemStack entryStack : entry.getValue()) {
 
@@ -52,14 +52,14 @@ public class ItemEntry {
 
     public void add (String stage, ItemStack[] entries) {
 
-        if (this.ENTRIES.containsKey(stage)) {
+        if (this.entries.containsKey(stage)) {
             
-            this.ENTRIES.put(stage, ArrayUtils.addAll(this.ENTRIES.get(stage), entries));
+            this.entries.put(stage, ArrayUtils.addAll(this.entries.get(stage), entries));
         }
         
         else {
             
-            this.ENTRIES.put(stage, entries);
+            this.entries.put(stage, entries);
         }
     }
 }

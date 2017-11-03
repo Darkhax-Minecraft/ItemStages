@@ -41,7 +41,7 @@ public class PluginItemStages implements IModPlugin {
 
         for (final Entry<Item, ItemEntry> entry : ItemStages.ITEM_STAGES.entrySet()) {
 
-            for (final Entry<String, ItemStack[]> stageEntry : entry.getValue().ENTRIES.entrySet()) {
+            for (final Entry<String, ItemStack[]> stageEntry : entry.getValue().entries.entrySet()) {
 
                 for (final ItemStack stack : stageEntry.getValue()) {
 
