@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import net.darkhax.bookshelf.util.StackUtils;
 import net.minecraft.item.ItemStack;
 
@@ -50,5 +52,14 @@ public class ItemEntry {
 
     public void add (String stage, ItemStack[] entries) {
 
+        if (this.ENTRIES.containsKey(stage)) {
+            
+            this.ENTRIES.put(stage, ArrayUtils.addAll(this.ENTRIES.get(stage), entries));
+        }
+        
+        else {
+            
+            this.ENTRIES.put(stage, entries);
+        }
     }
 }
