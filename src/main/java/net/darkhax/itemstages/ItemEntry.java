@@ -1,39 +1,54 @@
 package net.darkhax.itemstages;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import net.darkhax.bookshelf.util.StackUtils;
 import net.minecraft.item.ItemStack;
 
 public class ItemEntry {
 
-    private final String stage;
-    private final ItemStack[] stacks;
+    public final Map<String, ItemStack[]> ENTRIES = new HashMap<>();
 
     public ItemEntry (String stage, ItemStack[] stacks) {
 
-        this.stage = stage;
-        this.stacks = stacks;
+        this.ENTRIES.put(stage, stacks);
     }
 
-    public String getStage () {
+    public String getStage (ItemStack stack) {
 
-        return this.stage;
+        for (final Entry<String, ItemStack[]> entry : this.ENTRIES.entrySet()) {
+
+            for (final ItemStack entryStack : entry.getValue()) {
+
+                if (StackUtils.areStacksSimilar(entryStack, stack)) {
+
+                    return entry.getKey();
+                }
+            }
+        }
+
+        return "";
     }
 
-    public boolean matches (ItemStack stack) {
+    public boolean hasStack (ItemStack stack) {
 
-        for (final ItemStack restricted : this.stacks) {
+        for (final Entry<String, ItemStack[]> entry : this.ENTRIES.entrySet()) {
 
-            if (StackUtils.areStacksSimilar(restricted, stack)) {
+            for (final ItemStack entryStack : entry.getValue()) {
 
-                return true;
+                if (StackUtils.areStacksSimilar(entryStack, stack)) {
+
+                    return true;
+                }
             }
         }
 
         return false;
     }
 
-    public ItemStack[] getStacks () {
+    public void add (String stage, ItemStack[] entries) {
 
-        return this.stacks;
     }
 }

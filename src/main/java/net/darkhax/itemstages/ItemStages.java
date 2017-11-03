@@ -2,6 +2,7 @@ package net.darkhax.itemstages;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.darkhax.bookshelf.lib.LoggingHelper;
 import net.darkhax.bookshelf.util.GameUtils;
@@ -40,7 +41,25 @@ public class ItemStages {
     public static ItemEntry getEntry (ItemStack stack) {
 
         final ItemEntry entry = ITEM_STAGES.get(stack.getItem());
-        return entry != null && entry.matches(stack) ? entry : null;
+        return entry != null && entry.hasStack(stack) ? entry : null;
+    }
+
+    public static void addEntry (Item item, ItemEntry entry) {
+
+        if (ITEM_STAGES.containsKey(item)) {
+
+            final ItemEntry existing = ITEM_STAGES.get(item);
+
+            for (final Entry<String, ItemStack[]> entries : entry.ENTRIES.entrySet()) {
+
+                existing.add(entries.getKey(), entries.getValue());
+            }
+        }
+
+        else {
+
+            ITEM_STAGES.put(item, entry);
+        }
     }
 
     public static boolean isRestricted (EntityPlayer player, ItemStack stack) {
@@ -65,7 +84,7 @@ public class ItemStages {
 
             else {
 
-                return !stageData.hasUnlockedStage(entry.getStage());
+                return !stageData.hasUnlockedStage(entry.getStage(stack));
             }
         }
 
@@ -93,10 +112,10 @@ public class ItemStages {
 
             // Exit early if creative mode.
             if (player.isCreative()) {
-                
+
                 return;
             }
-            
+
             for (final EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
 
                 final ItemStack stack = player.getItemStackFromSlot(slot);
@@ -123,7 +142,7 @@ public class ItemStages {
 
                 event.getToolTip().clear();
                 event.getToolTip().add(TextFormatting.WHITE + "Restricted Item");
-                event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + "Further progression is required to access this item. You need stage " + entry.getStage() + " first.");
+                event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + "Further progression is required to access this item. You need stage " + entry.getStage(event.getItemStack()) + " first.");
             }
         }
     }

@@ -54,7 +54,7 @@ public class ActionAddItemRestriction implements IAction {
                 throw new IllegalArgumentException("Entry contains an empty/air stack!");
             }
 
-            ItemStages.ITEM_STAGES.put(stack.getItem(), new ItemEntry(this.stage, this.restrictions));
+            ItemStages.addEntry(stack.getItem(), new ItemEntry(this.stage, this.restrictions));
         }
     }
 
