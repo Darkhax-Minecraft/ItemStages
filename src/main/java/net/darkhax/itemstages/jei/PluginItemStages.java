@@ -41,16 +41,17 @@ public class PluginItemStages implements IModPlugin {
 
         for (final Entry<Item, ItemEntry> entry : ItemStages.ITEM_STAGES.entrySet()) {
 
-            final ItemStack stack = entry.getValue().getStack();
+            for (final ItemStack stack : entry.getValue().getStacks()) {
 
-            if (ItemStages.isRestricted(player, stack)) {
+                if (ItemStages.isRestricted(player, stack)) {
 
-                toBlacklist.add(stack);
-            }
+                    toBlacklist.add(stack);
+                }
 
-            else {
+                else {
 
-                toWhitelist.add(stack);
+                    toWhitelist.add(stack);
+                }
             }
         }
 

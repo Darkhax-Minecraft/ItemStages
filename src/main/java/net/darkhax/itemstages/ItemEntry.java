@@ -1,27 +1,17 @@
 package net.darkhax.itemstages;
 
-import net.minecraft.item.Item;
+import net.darkhax.bookshelf.util.StackUtils;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.OreDictionary;
 
 public class ItemEntry {
 
     private final String stage;
-    private final Item item;
-    private final int meta;
-    private final ItemStack stack;
+    private final ItemStack[] stacks;
 
-    public ItemEntry (String stage, ItemStack stack) {
-
-        this(stage, stack.getItem(), stack.getMetadata());
-    }
-
-    public ItemEntry (String stage, Item item, int meta) {
+    public ItemEntry (String stage, ItemStack[] stacks) {
 
         this.stage = stage;
-        this.item = item;
-        this.meta = meta;
-        this.stack = new ItemStack(item, 1, meta);
+        this.stacks = stacks;
     }
 
     public String getStage () {
@@ -29,23 +19,21 @@ public class ItemEntry {
         return this.stage;
     }
 
-    public Item getItem () {
-
-        return this.item;
-    }
-
-    public int getMeta () {
-
-        return this.meta;
-    }
-
     public boolean matches (ItemStack stack) {
 
-        return stack.getItem() == this.item && (stack.getMetadata() == this.meta || this.meta == OreDictionary.WILDCARD_VALUE) && !stack.isEmpty();
+        for (final ItemStack restricted : this.stacks) {
+
+            if (StackUtils.areStacksSimilar(restricted, stack)) {
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public ItemStack getStack () {
+    public ItemStack[] getStacks () {
 
-        return this.stack;
+        return this.stacks;
     }
 }

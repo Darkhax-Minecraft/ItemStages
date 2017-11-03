@@ -1,24 +1,37 @@
 package net.darkhax.itemstages.compat.crt;
 
-import java.util.List;
 import java.util.StringJoiner;
 
 import crafttweaker.IAction;
+import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.darkhax.itemstages.ItemEntry;
 import net.darkhax.itemstages.ItemStages;
+import net.darkhax.itemstages.TempUtils;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class ActionAddItemRestriction implements IAction {
 
     private final String stage;
-    private final ItemStack[] restrictions;
+    private final IIngredient restricted;
+    private ItemStack[] restrictions;
 
-    public ActionAddItemRestriction (String stage, List<IItemStack> restrictions) {
+    public ActionAddItemRestriction (String stage, IIngredient restricted) {
 
         this.stage = stage;
-        this.restrictions = CraftTweakerMC.getItemStacks(restrictions);
+        this.restricted = restricted;
+
+        if (this.restricted instanceof IItemStack && ((IItemStack) this.restricted).getDamage() == OreDictionary.WILDCARD_VALUE) {
+
+            this.restrictions = TempUtils.getAllItems(CraftTweakerMC.getItemStack(this.restricted).getItem());
+        }
+
+        else {
+
+            this.restrictions = CraftTweakerMC.getItemStacks(this.restricted.getItems());
+        }
     }
 
     @Override
@@ -41,7 +54,7 @@ public class ActionAddItemRestriction implements IAction {
                 throw new IllegalArgumentException("Entry contains an empty/air stack!");
             }
 
-            ItemStages.ITEM_STAGES.put(stack.getItem(), new ItemEntry(this.stage, stack));
+            ItemStages.ITEM_STAGES.put(stack.getItem(), new ItemEntry(this.stage, this.restrictions));
         }
     }
 

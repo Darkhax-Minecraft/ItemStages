@@ -13,6 +13,6 @@ public class ItemStagesCrT {
     @ZenMethod
     public static void addItemStage (String stage, IIngredient input) {
 
-        CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, input.getItems()));
+        CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, input));
     }
 }
