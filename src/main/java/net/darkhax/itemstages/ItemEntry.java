@@ -24,7 +24,7 @@ public class ItemEntry {
 
             for (final ItemStack entryStack : entry.getValue()) {
 
-                if (StackUtils.areStacksSimilar(entryStack, stack)) {
+                if (StackUtils.areStacksSimilarWithPartialNBT(entryStack, stack)) {
 
                     return entry.getKey();
                 }
@@ -40,7 +40,7 @@ public class ItemEntry {
 
             for (final ItemStack entryStack : entry.getValue()) {
 
-                if (StackUtils.areStacksSimilar(entryStack, stack)) {
+                if (StackUtils.areStacksSimilarWithPartialNBT(entryStack, stack)) {
 
                     return true;
                 }
