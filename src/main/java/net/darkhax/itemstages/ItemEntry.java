@@ -53,12 +53,12 @@ public class ItemEntry {
     public void add (String stage, ItemStack[] entries) {
 
         if (this.entries.containsKey(stage)) {
-            
+
             this.entries.put(stage, ArrayUtils.addAll(this.entries.get(stage), entries));
         }
-        
+
         else {
-            
+
             this.entries.put(stage, entries);
         }
     }
