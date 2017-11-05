@@ -12,6 +12,7 @@ import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import net.darkhax.itemstages.ItemEntry;
 import net.darkhax.itemstages.ItemStages;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -34,40 +35,49 @@ public class PluginItemStages implements IModPlugin {
     @SideOnly(Side.CLIENT)
     public static void syncHiddenItems (EntityPlayer player) {
 
-        final long time = System.currentTimeMillis();
-        ItemStages.LOG.info("Starting a JEI Sync");
-        final Set<ItemStack> toBlacklist = new HashSet<>();
-        final Set<ItemStack> toWhitelist = new HashSet<>();
+        if (player.getEntityWorld().isRemote) {
 
-        for (final Entry<Item, ItemEntry> entry : ItemStages.ITEM_STAGES.entrySet()) {
+            if (!Minecraft.getMinecraft().isCallingFromMinecraftThread()) {
 
-            for (final Entry<String, ItemStack[]> stageEntry : entry.getValue().entries.entrySet()) {
+                Minecraft.getMinecraft().addScheduledTask( () -> syncHiddenItems(player));
+                return;
+            }
 
-                for (final ItemStack stack : stageEntry.getValue()) {
+            final long time = System.currentTimeMillis();
+            ItemStages.LOG.info("Starting a JEI Sync");
+            final Set<ItemStack> toBlacklist = new HashSet<>();
+            final Set<ItemStack> toWhitelist = new HashSet<>();
 
-                    if (ItemStages.isRestricted(player, stack)) {
+            for (final Entry<Item, ItemEntry> entry : ItemStages.ITEM_STAGES.entrySet()) {
 
-                        toBlacklist.add(stack);
-                    }
+                for (final Entry<String, ItemStack[]> stageEntry : entry.getValue().entries.entrySet()) {
 
-                    else {
+                    for (final ItemStack stack : stageEntry.getValue()) {
 
-                        toWhitelist.add(stack);
+                        if (ItemStages.isRestricted(player, stack)) {
+
+                            toBlacklist.add(stack);
+                        }
+
+                        else {
+
+                            toWhitelist.add(stack);
+                        }
                     }
                 }
             }
+
+            if (!toBlacklist.isEmpty()) {
+
+                ingredientRegistry.removeIngredientsAtRuntime(ItemStack.class, new ArrayList<>(toBlacklist));
+            }
+
+            if (!toWhitelist.isEmpty()) {
+
+                ingredientRegistry.addIngredientsAtRuntime(ItemStack.class, new ArrayList<>(toWhitelist));
+            }
+
+            ItemStages.LOG.info("Finished JEI Sync, took " + (System.currentTimeMillis() - time) + "ms. " + toBlacklist.size() + " hidden, " + toWhitelist.size() + " shown.");
         }
-
-        if (!toBlacklist.isEmpty()) {
-
-            ingredientRegistry.removeIngredientsAtRuntime(ItemStack.class, new ArrayList<>(toBlacklist));
-        }
-
-        if (!toWhitelist.isEmpty()) {
-
-            ingredientRegistry.addIngredientsAtRuntime(ItemStack.class, new ArrayList<>(toWhitelist));
-        }
-
-        ItemStages.LOG.info("Finished JEI Sync, took " + (System.currentTimeMillis() - time) + "ms. " + toBlacklist.size() + " hidden, " + toWhitelist.size() + " shown.");
     }
 }
