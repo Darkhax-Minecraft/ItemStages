@@ -6,9 +6,9 @@ import crafttweaker.IAction;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
+import net.darkhax.bookshelf.util.StackUtils;
 import net.darkhax.itemstages.ItemEntry;
 import net.darkhax.itemstages.ItemStages;
-import net.darkhax.itemstages.TempUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -25,7 +25,7 @@ public class ActionAddItemRestriction implements IAction {
 
         if (this.restricted instanceof IItemStack && ((IItemStack) this.restricted).getDamage() == OreDictionary.WILDCARD_VALUE) {
 
-            this.restrictions = TempUtils.getAllItems(CraftTweakerMC.getItemStack(this.restricted).getItem());
+            this.restrictions = StackUtils.getAllItems(CraftTweakerMC.getItemStack(this.restricted).getItem());
         }
 
         else {
