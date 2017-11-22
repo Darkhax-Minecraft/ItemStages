@@ -1,6 +1,7 @@
 package net.darkhax.itemstages.jei;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -10,6 +11,7 @@ import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import net.darkhax.gamestages.capabilities.PlayerDataHandler;
 import net.darkhax.itemstages.ItemEntry;
 import net.darkhax.itemstages.ItemStages;
 import net.minecraft.client.Minecraft;
@@ -48,33 +50,32 @@ public class PluginItemStages implements IModPlugin {
             final Set<ItemStack> toBlacklist = new HashSet<>();
             final Set<ItemStack> toWhitelist = new HashSet<>();
 
+            final PlayerDataHandler.IStageData stageData = PlayerDataHandler.getStageData(player);
+
             for (final Entry<Item, ItemEntry> entry : ItemStages.ITEM_STAGES.entrySet()) {
 
                 for (final Entry<String, ItemStack[]> stageEntry : entry.getValue().entries.entrySet()) {
 
-                    for (final ItemStack stack : stageEntry.getValue()) {
+                    if (stageData.hasUnlockedStage(stageEntry.getKey())) {
 
-                        if (ItemStages.isRestricted(player, stack)) {
+                        Collections.addAll(toWhitelist, stageEntry.getValue());
+                    }
 
-                            toBlacklist.add(stack);
-                        }
+                    else {
 
-                        else {
-
-                            toWhitelist.add(stack);
-                        }
+                        Collections.addAll(toBlacklist, stageEntry.getValue());
                     }
                 }
             }
 
             if (!toBlacklist.isEmpty()) {
 
-                ingredientRegistry.removeIngredientsAtRuntime(ItemStack.class, new ArrayList<>(toBlacklist));
+                ingredientRegistry.removeIngredientsAtRuntime(ItemStack.class, toBlacklist);
             }
 
             if (!toWhitelist.isEmpty()) {
 
-                ingredientRegistry.addIngredientsAtRuntime(ItemStack.class, new ArrayList<>(toWhitelist));
+                ingredientRegistry.addIngredientsAtRuntime(ItemStack.class, toWhitelist);
             }
 
             ItemStages.LOG.info("Finished JEI Sync, took " + (System.currentTimeMillis() - time) + "ms. " + toBlacklist.size() + " hidden, " + toWhitelist.size() + " shown.");

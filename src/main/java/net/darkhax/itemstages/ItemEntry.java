@@ -31,23 +31,7 @@ public class ItemEntry {
             }
         }
 
-        return "";
-    }
-
-    public boolean hasStack (ItemStack stack) {
-
-        for (final Entry<String, ItemStack[]> entry : this.entries.entrySet()) {
-
-            for (final ItemStack entryStack : entry.getValue()) {
-
-                if (StackUtils.areStacksSimilarWithPartialNBT(entryStack, stack)) {
-
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return null;
     }
 
     public void add (String stage, ItemStack[] entries) {

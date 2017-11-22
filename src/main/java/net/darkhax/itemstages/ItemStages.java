@@ -1,6 +1,6 @@
 package net.darkhax.itemstages;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -31,24 +31,30 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@Mod(modid = "itemstages", name = "Item Stages", version = "@VERSION@", dependencies = "after:jei@[4.8.0.110,);required-after:bookshelf@[2.2.489,);required-after:gamestages@[1.0.67,);required-after:crafttweaker@[2.7.2.,)", certificateFingerprint = "@FINGERPRINT@")
+@Mod(modid = "itemstages", name = "Item Stages", version = "@VERSION@", dependencies = "after:jei@[4.8.2.123,);required-after:bookshelf@[2.2.489,);required-after:gamestages@[1.0.67,);required-after:crafttweaker@[2.7.2.,)", certificateFingerprint = "@FINGERPRINT@")
 public class ItemStages {
 
     public static final LoggingHelper LOG = new LoggingHelper("Item Stages");
 
-    public static final Map<Item, ItemEntry> ITEM_STAGES = new HashMap<>();
+    public static final Map<Item, ItemEntry> ITEM_STAGES = new IdentityHashMap<>();
 
-    public static ItemEntry getEntry (ItemStack stack) {
+    public static String getStage (ItemStack stack) {
 
         final ItemEntry entry = ITEM_STAGES.get(stack.getItem());
-        return entry != null && entry.hasStack(stack) ? entry : null;
+
+        if (entry == null) {
+
+            return null;
+        }
+
+        return entry.getStage(stack);
     }
 
     public static void addEntry (Item item, ItemEntry entry) {
 
-        if (ITEM_STAGES.containsKey(item)) {
+        final ItemEntry existing = ITEM_STAGES.get(item);
 
-            final ItemEntry existing = ITEM_STAGES.get(item);
+        if (existing != null) {
 
             for (final Entry<String, ItemStack[]> entries : entry.entries.entrySet()) {
 
@@ -74,17 +80,17 @@ public class ItemStages {
 
         if (stageData != null) {
 
-            final ItemEntry entry = getEntry(stack);
+            final String stage = getStage(stack);
 
             // No restrictions
-            if (entry == null) {
+            if (stage == null) {
 
                 return false;
             }
 
             else {
 
-                return !stageData.hasUnlockedStage(entry.getStage(stack));
+                return !stageData.hasUnlockedStage(stage);
             }
         }
 
@@ -136,14 +142,14 @@ public class ItemStages {
 
         if (!event.getItemStack().isEmpty() && isRestricted(event.getEntityPlayer(), event.getItemStack())) {
 
-            final ItemEntry entry = getEntry(event.getItemStack());
+            final String stage = getStage(event.getItemStack());
 
-            if (entry != null) {
+            if (stage != null) {
 
                 event.getToolTip().clear();
                 event.getToolTip().add(TextFormatting.WHITE + "Restricted Item");
                 event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + "Further progression is required to access this item.");
-                event.getToolTip().add(TextFormatting.RED + "You need stage " + entry.getStage(event.getItemStack()) + " first.");
+                event.getToolTip().add(TextFormatting.RED + "You need stage " + stage + " first.");
             }
         }
     }
