@@ -148,7 +148,8 @@ public class ItemStages {
 
                 event.getToolTip().clear();
                 event.getToolTip().add(TextFormatting.WHITE + "Restricted Item");
-                event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + "Further progression is required to access this item.");
+                event.getToolTip().add(" ");
+                event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + "You can not access this item yet.");
                 event.getToolTip().add(TextFormatting.RED + "You need stage " + stage + " first.");
             }
         }
