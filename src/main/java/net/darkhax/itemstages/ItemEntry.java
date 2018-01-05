@@ -24,14 +24,20 @@ public class ItemEntry {
 
             for (final ItemStack entryStack : entry.getValue()) {
 
-                if (StackUtils.areStacksSimilarWithPartialNBT(entryStack, stack)) {
+                if (!this.isTagEmpty(stack) && StackUtils.areStacksSimilarWithPartialNBT(entryStack, stack) || this.isTagEmpty(stack) && this.isTagEmpty(entryStack) && StackUtils.areStacksSimilar(stack, entryStack)) {
 
                     return entry.getKey();
                 }
+
             }
         }
 
         return null;
+    }
+
+    private boolean isTagEmpty (ItemStack stack) {
+
+        return stack.getTagCompound() == null || stack.getTagCompound().getKeySet().size() == 0;
     }
 
     public void add (String stage, ItemStack[] entries) {
