@@ -167,17 +167,7 @@ public class ItemStages {
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
-    public void onStageAdded (GameStageEvent.Added event) {
-
-        if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
-
-            PluginItemStages.syncHiddenItems(event.getPlayer());
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public void onStageRemoved (GameStageEvent.Removed event) {
+    public void onClientSync (GameStageEvent.ClientSync event) {
 
         if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
 
