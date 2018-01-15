@@ -15,4 +15,10 @@ public class ItemStagesCrT {
 
         CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, input));
     }
+
+    @ZenMethod
+    public static void removeItemStage (IIngredient input) {
+
+        CraftTweakerAPI.apply(new ActionRemoveRestriction(input));
+    }
 }
