@@ -14,6 +14,8 @@ import net.darkhax.gamestages.capabilities.PlayerDataHandler.IStageData;
 import net.darkhax.gamestages.event.GameStageEvent;
 import net.darkhax.gamestages.event.StageDataEvent;
 import net.darkhax.itemstages.jei.PluginItemStages;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -172,6 +174,15 @@ public class ItemStages {
         }
 
         LOG.info("Sorting complete. Found {} stages. Took {}ms", SORTED_STAGES.keySet().size(), System.currentTimeMillis() - time);
+
+        // Add a resource reload listener to keep up to sync with JEI.
+        ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(listener -> {
+
+            if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
+
+                PluginItemStages.syncHiddenItems(PlayerUtils.getClientPlayer());
+            }
+        });
     }
 
     @EventHandler
