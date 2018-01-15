@@ -7,7 +7,6 @@ import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.darkhax.bookshelf.util.StackUtils;
-import net.darkhax.itemstages.ItemEntry;
 import net.darkhax.itemstages.ItemStages;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -54,7 +53,7 @@ public class ActionAddItemRestriction implements IAction {
                 throw new IllegalArgumentException("Entry contains an empty/air stack!");
             }
 
-            ItemStages.addEntry(stack.getItem(), new ItemEntry(this.stage, this.restrictions));
+            ItemStages.addEntry(this.stage, stack);
         }
     }
 

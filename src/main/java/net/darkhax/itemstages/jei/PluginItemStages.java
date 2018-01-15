@@ -1,10 +1,8 @@
 package net.darkhax.itemstages.jei;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -12,11 +10,9 @@ import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import net.darkhax.gamestages.capabilities.PlayerDataHandler;
-import net.darkhax.itemstages.ItemEntry;
 import net.darkhax.itemstages.ItemStages;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -37,34 +33,37 @@ public class PluginItemStages implements IModPlugin {
     @SideOnly(Side.CLIENT)
     public static void syncHiddenItems (EntityPlayer player) {
 
-        if (player.getEntityWorld().isRemote) {
+        if (player != null && player.getEntityWorld().isRemote) {
 
+            // JEI only allows blacklisting from the main client thread.
             if (!Minecraft.getMinecraft().isCallingFromMinecraftThread()) {
 
+                // Reschedules the sync to the correct thread.
                 Minecraft.getMinecraft().addScheduledTask( () -> syncHiddenItems(player));
                 return;
             }
 
+            ItemStages.LOG.info("Syncing {} items with JEI!.", ItemStages.ITEM_STAGES.size());
             final long time = System.currentTimeMillis();
-            ItemStages.LOG.info("Starting a JEI Sync");
-            final Set<ItemStack> toBlacklist = new HashSet<>();
-            final Set<ItemStack> toWhitelist = new HashSet<>();
 
+            final List<ItemStack> toBlacklist = new ArrayList<>();
+            final List<ItemStack> toWhitelist = new ArrayList<>();
+
+            // Gets the client player's stage data
             final PlayerDataHandler.IStageData stageData = PlayerDataHandler.getStageData(player);
 
-            for (final Entry<Item, ItemEntry> entry : ItemStages.ITEM_STAGES.entrySet()) {
+            for (final Entry<ItemStack, String> entry : ItemStages.ITEM_STAGES.entrySet()) {
 
-                for (final Entry<String, ItemStack[]> stageEntry : entry.getValue().entries.entrySet()) {
+                // If player has the stage, it is whitelisted.
+                if (stageData.hasUnlockedStage(entry.getValue())) {
 
-                    if (stageData.hasUnlockedStage(stageEntry.getKey())) {
+                    toWhitelist.add(entry.getKey());
+                }
 
-                        Collections.addAll(toWhitelist, stageEntry.getValue());
-                    }
+                // If player doesn't have the stage, it is blacklisted.
+                else {
 
-                    else {
-
-                        Collections.addAll(toBlacklist, stageEntry.getValue());
-                    }
+                    toBlacklist.add(entry.getKey());
                 }
             }
 

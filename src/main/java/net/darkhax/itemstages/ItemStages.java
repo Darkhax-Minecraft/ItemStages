@@ -1,9 +1,6 @@
 package net.darkhax.itemstages;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import net.darkhax.bookshelf.lib.ItemStackMap;
 import net.darkhax.bookshelf.lib.LoggingHelper;
 import net.darkhax.bookshelf.util.GameUtils;
 import net.darkhax.bookshelf.util.PlayerUtils;
@@ -14,7 +11,6 @@ import net.darkhax.gamestages.event.StageDataEvent;
 import net.darkhax.itemstages.jei.PluginItemStages;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -36,46 +32,27 @@ public class ItemStages {
 
     public static final LoggingHelper LOG = new LoggingHelper("Item Stages");
 
-    public static final Map<Item, ItemEntry> ITEM_STAGES = new IdentityHashMap<>();
+    public static final ItemStackMap<String> ITEM_STAGES = new ItemStackMap<>(StageCompare.INSTANCE);
 
     public static String getStage (ItemStack stack) {
 
-        final ItemEntry entry = ITEM_STAGES.get(stack.getItem());
-
-        if (entry == null) {
-
-            return null;
-        }
-
-        return entry.getStage(stack);
+        return ITEM_STAGES.get(stack);
     }
 
-    public static void addEntry (Item item, ItemEntry entry) {
+    public static void addEntry (String stage, ItemStack stack) {
 
-        final ItemEntry existing = ITEM_STAGES.get(item);
-
-        if (existing != null) {
-
-            for (final Entry<String, ItemStack[]> entries : entry.entries.entrySet()) {
-
-                existing.add(entries.getKey(), entries.getValue());
-            }
-        }
-
-        else {
-
-            ITEM_STAGES.put(item, entry);
-        }
+        ITEM_STAGES.put(stack, stage);
     }
 
     public static boolean isRestricted (EntityPlayer player, ItemStack stack) {
 
-        // Air is not restricted
+        // Air can not be restricted.
         if (stack.isEmpty()) {
 
             return false;
         }
 
+        // Get player's stage data.
         final IStageData stageData = PlayerDataHandler.getStageData(player);
 
         if (stageData != null) {
