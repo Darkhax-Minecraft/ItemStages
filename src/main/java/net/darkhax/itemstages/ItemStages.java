@@ -4,6 +4,10 @@ import java.util.Map.Entry;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 import net.darkhax.bookshelf.lib.ItemStackMap;
 import net.darkhax.bookshelf.lib.LoggingHelper;
@@ -18,7 +22,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,46 +48,24 @@ public class ItemStages {
 
     public static final ItemStackMap<String> ITEM_STAGES = new ItemStackMap<>(StageCompare.INSTANCE);
     public static final ListMultimap<String, ItemStack> SORTED_STAGES = ArrayListMultimap.create();
+    public static final SetMultimap<Item, Tuple<ItemStack, String>> SORTED_ITEM_STAGES = Multimaps.newSetMultimap(Maps.newIdentityHashMap(), Sets::newIdentityHashSet);
 
     public static String getStage (ItemStack stack) {
 
-        return ITEM_STAGES.get(stack);
-    }
-
-    public static void addEntry (String stage, ItemStack stack) {
-
-        ITEM_STAGES.put(stack, stage);
-    }
-
-    public static boolean isRestricted (EntityPlayer player, ItemStack stack) {
-
-        // Air can not be restricted.
         if (stack.isEmpty()) {
 
-            return false;
+            return null;
         }
 
-        // Get player's stage data.
-        final IStageData stageData = PlayerDataHandler.getStageData(player);
+        for (final Tuple<ItemStack, String> entry : SORTED_ITEM_STAGES.get(stack.getItem())) {
 
-        if (stageData != null) {
+            if (StageCompare.INSTANCE.isValid(stack, entry.getFirst())) {
 
-            final String stage = getStage(stack);
-
-            // No restrictions
-            if (stage == null) {
-
-                return false;
-            }
-
-            else {
-
-                return !stageData.hasUnlockedStage(stage);
+                return entry.getSecond();
             }
         }
 
-        // default to restricted
-        return true;
+        return null;
     }
 
     private static void sendDropMessage (EntityPlayer player, ItemStack stack) {
@@ -101,9 +85,10 @@ public class ItemStages {
         if (PlayerUtils.isPlayerReal(event.getEntityLiving())) {
 
             final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+            final IStageData data = PlayerDataHandler.getStageData(player);
 
             // Exit early if creative mode.
-            if (player.isCreative()) {
+            if (player.isCreative() || data == null) {
 
                 return;
             }
@@ -111,8 +96,9 @@ public class ItemStages {
             for (final EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
 
                 final ItemStack stack = player.getItemStackFromSlot(slot);
+                final String stage = getStage(stack);
 
-                if (isRestricted(player, stack)) {
+                if (stage != null && data.hasUnlockedStage(stage)) {
 
                     player.setItemStackToSlot(slot, ItemStack.EMPTY);
                     player.dropItem(stack, false);
@@ -126,18 +112,16 @@ public class ItemStages {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onTooltip (ItemTooltipEvent event) {
 
-        if (!event.getItemStack().isEmpty() && isRestricted(event.getEntityPlayer(), event.getItemStack())) {
+        final String stage = getStage(event.getItemStack());
+        final IStageData data = PlayerDataHandler.getStageData(event.getEntityPlayer());
 
-            final String stage = getStage(event.getItemStack());
+        if (stage != null && data != null && !data.hasUnlockedStage(stage)) {
 
-            if (stage != null) {
-
-                event.getToolTip().clear();
-                event.getToolTip().add(TextFormatting.WHITE + "Restricted Item");
-                event.getToolTip().add(" ");
-                event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + "You can not access this item yet.");
-                event.getToolTip().add(TextFormatting.RED + "You need stage " + stage + " first.");
-            }
+            event.getToolTip().clear();
+            event.getToolTip().add(TextFormatting.WHITE + "Restricted Item");
+            event.getToolTip().add(" ");
+            event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + "You can not access this item yet.");
+            event.getToolTip().add(TextFormatting.RED + "You need stage " + stage + " first.");
         }
     }
 
@@ -171,6 +155,7 @@ public class ItemStages {
         for (final Entry<ItemStack, String> entry : ITEM_STAGES.entrySet()) {
 
             SORTED_STAGES.put(entry.getValue(), entry.getKey());
+            SORTED_ITEM_STAGES.put(entry.getKey().getItem(), new Tuple<>(entry.getKey(), entry.getValue()));
         }
 
         LOG.info("Sorting complete. Found {} stages. Took {}ms", SORTED_STAGES.keySet().size(), System.currentTimeMillis() - time);
