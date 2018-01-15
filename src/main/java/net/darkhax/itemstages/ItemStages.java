@@ -1,5 +1,10 @@
 package net.darkhax.itemstages;
 
+import java.util.Map.Entry;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+
 import net.darkhax.bookshelf.lib.ItemStackMap;
 import net.darkhax.bookshelf.lib.LoggingHelper;
 import net.darkhax.bookshelf.util.GameUtils;
@@ -21,6 +26,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -33,6 +39,7 @@ public class ItemStages {
     public static final LoggingHelper LOG = new LoggingHelper("Item Stages");
 
     public static final ItemStackMap<String> ITEM_STAGES = new ItemStackMap<>(StageCompare.INSTANCE);
+    public static final ListMultimap<String, ItemStack> SORTED_STAGES = ArrayListMultimap.create();
 
     public static String getStage (ItemStack stack) {
 
@@ -150,6 +157,21 @@ public class ItemStages {
 
             PluginItemStages.syncHiddenItems(event.getPlayer());
         }
+    }
+
+    @EventHandler()
+    @SideOnly(Side.CLIENT)
+    public void onLoadComplete (FMLLoadCompleteEvent event) {
+
+        LOG.info("Sorting {} staged items.", ITEM_STAGES.size());
+        final long time = System.currentTimeMillis();
+
+        for (final Entry<ItemStack, String> entry : ITEM_STAGES.entrySet()) {
+
+            SORTED_STAGES.put(entry.getValue(), entry.getKey());
+        }
+
+        LOG.info("Sorting complete. Found {} stages. Took {}ms", SORTED_STAGES.keySet().size(), System.currentTimeMillis() - time);
     }
 
     @EventHandler

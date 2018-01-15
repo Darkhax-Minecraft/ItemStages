@@ -2,7 +2,6 @@ package net.darkhax.itemstages.jei;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -52,18 +51,22 @@ public class PluginItemStages implements IModPlugin {
             // Gets the client player's stage data
             final PlayerDataHandler.IStageData stageData = PlayerDataHandler.getStageData(player);
 
-            for (final Entry<ItemStack, String> entry : ItemStages.ITEM_STAGES.entrySet()) {
+            // Loops through all the known stages
+            for (final String key : ItemStages.SORTED_STAGES.keySet()) {
+
+                // Gets all items staged to the current stage.
+                final List<ItemStack> entries = ItemStages.SORTED_STAGES.get(key);
 
                 // If player has the stage, it is whitelisted.
-                if (stageData.hasUnlockedStage(entry.getValue())) {
+                if (stageData.hasUnlockedStage(key)) {
 
-                    toWhitelist.add(entry.getKey());
+                    toWhitelist.addAll(entries);
                 }
 
                 // If player doesn't have the stage, it is blacklisted.
                 else {
 
-                    toBlacklist.add(entry.getKey());
+                    toBlacklist.addAll(entries);
                 }
             }
 
