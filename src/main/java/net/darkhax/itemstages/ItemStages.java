@@ -98,7 +98,7 @@ public class ItemStages {
                 final ItemStack stack = player.getItemStackFromSlot(slot);
                 final String stage = getStage(stack);
 
-                if (stage != null && data.hasUnlockedStage(stage)) {
+                if (stage != null && !data.hasUnlockedStage(stage)) {
 
                     player.setItemStackToSlot(slot, ItemStack.EMPTY);
                     player.dropItem(stack, false);
