@@ -22,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.EntityEquipmentSlot.Type;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Tuple;
@@ -76,6 +77,7 @@ public class ItemStages {
     @Mod.EventHandler
     public void preInit (FMLPreInitializationEvent event) {
 
+        new ConfigurationHandler(event.getSuggestedConfigurationFile());
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -94,6 +96,12 @@ public class ItemStages {
             }
 
             for (final EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+
+                // Skips the item if the slot type was configured to be ignored.
+                if (ConfigurationHandler.allowHoldingRestricted && slot.getSlotType() == Type.HAND || ConfigurationHandler.allowEquipRestricted && slot.getSlotType() == Type.ARMOR) {
+
+                    continue;
+                }
 
                 final ItemStack stack = player.getItemStackFromSlot(slot);
                 final String stage = getStage(stack);
