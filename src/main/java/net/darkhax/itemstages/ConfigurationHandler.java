@@ -12,6 +12,8 @@ public class ConfigurationHandler {
 
     public static boolean allowEquipRestricted = false;
 
+    public static boolean allowInteractRestricted = false;
+
     public ConfigurationHandler (File file) {
 
         config = new Configuration(file);
@@ -22,6 +24,7 @@ public class ConfigurationHandler {
 
         allowHoldingRestricted = config.getBoolean("allowHoldingRestricted", Configuration.CATEGORY_GENERAL, false, "Should players be allowed to hold items that are restricted to them.");
         allowEquipRestricted = config.getBoolean("allowEquipRestricted", Configuration.CATEGORY_GENERAL, false, "Should players be allowed to equip items that are restricted to them.");
+        allowInteractRestricted = config.getBoolean("allowInteractRestricted", Configuration.CATEGORY_GENERAL, false, "Should players be allowed to interact (left/right click) with items that are restricted to them.");
 
         if (config.hasChanged()) {
             config.save();

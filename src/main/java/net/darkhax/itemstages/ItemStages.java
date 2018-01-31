@@ -31,6 +31,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -79,6 +81,37 @@ public class ItemStages {
 
         new ConfigurationHandler(event.getSuggestedConfigurationFile());
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void onPlayerDig (BreakSpeed event) {
+
+        if (!ConfigurationHandler.allowInteractRestricted) {
+
+            final IStageData data = PlayerDataHandler.getStageData(event.getEntityPlayer());
+            final String stage = getStage(event.getEntityPlayer().getHeldItemMainhand());
+
+            if (stage != null && !data.hasUnlockedStage(stage)) {
+
+                event.setNewSpeed(-1f);
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerInteract (PlayerInteractEvent event) {
+
+        if (event.isCancelable() && !ConfigurationHandler.allowInteractRestricted) {
+
+            final IStageData data = PlayerDataHandler.getStageData(event.getEntityPlayer());
+            final String stage = getStage(event.getItemStack());
+
+            if (stage != null && !data.hasUnlockedStage(stage)) {
+
+                event.setCanceled(true);
+            }
+        }
     }
 
     @SubscribeEvent
