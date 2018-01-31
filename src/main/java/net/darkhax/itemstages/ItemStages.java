@@ -86,7 +86,7 @@ public class ItemStages {
     @SubscribeEvent
     public void onPlayerDig (BreakSpeed event) {
 
-        if (!ConfigurationHandler.allowInteractRestricted) {
+        if (!ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
 
             final IStageData data = PlayerDataHandler.getStageData(event.getEntityPlayer());
             final String stage = getStage(event.getEntityPlayer().getHeldItemMainhand());
@@ -102,7 +102,7 @@ public class ItemStages {
     @SubscribeEvent
     public void onPlayerInteract (PlayerInteractEvent event) {
 
-        if (event.isCancelable() && !ConfigurationHandler.allowInteractRestricted) {
+        if (event.isCancelable() && !ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
 
             final IStageData data = PlayerDataHandler.getStageData(event.getEntityPlayer());
             final String stage = getStage(event.getItemStack());
