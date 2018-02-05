@@ -22,6 +22,6 @@ public class StageCompare implements IStackComparator {
 
     private boolean isTagEmpty (ItemStack stack) {
 
-        return stack.getTagCompound() == null || stack.getTagCompound().getKeySet().size() == 0;
+        return !stack.hasTagCompound() || stack.getTagCompound().getKeySet().isEmpty();
     }
 }
