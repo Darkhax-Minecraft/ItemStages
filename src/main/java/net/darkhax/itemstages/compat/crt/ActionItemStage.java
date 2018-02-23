@@ -6,6 +6,7 @@ import crafttweaker.IAction;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
+import net.darkhax.bookshelf.lib.Constants;
 import net.darkhax.bookshelf.util.StackUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -37,19 +38,25 @@ public abstract class ActionItemStage implements IAction {
 
     private String describeStack (ItemStack stack) {
 
-        return String.format("%s:%d%s", StackUtils.getStackIdentifier(stack), stack.getMetadata(), stack.hasTagCompound() ? stack.getTagCompound().toString() : "");
+        return String.format("%s - %s:%d%s", stack.getDisplayName(), StackUtils.getStackIdentifier(stack), stack.getMetadata(), stack.hasTagCompound() ? stack.getTagCompound().toString() : "");
     }
 
     protected String describeRestrictedStacks () {
 
-        final StringJoiner joiner = new StringJoiner(", ", "[ ", " ]");
+        // Handle only one item seperatly.
+        if (this.restrictions.length == 1) {
+            
+            return this.describeStack(this.restrictions[0]);
+        }
+        
+        final StringJoiner joiner = new StringJoiner(Constants.NEW_LINE);
 
         for (final ItemStack stack : this.getRestrictedItems()) {
 
             joiner.add(this.describeStack(stack));
         }
 
-        return this.getRestrictedItems().length + " entries: " + joiner.toString();
+        return this.getRestrictedItems().length + " entries: " + Constants.NEW_LINE + joiner.toString();
     }
 
     protected void validate () {

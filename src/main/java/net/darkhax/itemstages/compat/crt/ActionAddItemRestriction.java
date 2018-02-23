@@ -33,6 +33,6 @@ public class ActionAddItemRestriction extends ActionItemStage {
     @Override
     public String describe () {
 
-        return "Added " + this.describeRestrictedStacks();
+        return "Adding to item stage " + this.stage + ". " + this.describeRestrictedStacks();
     }
 }

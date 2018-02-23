@@ -25,6 +25,6 @@ public class ActionRemoveRestriction extends ActionItemStage {
     @Override
     public String describe () {
 
-        return "Removed " + this.describeRestrictedStacks();
+        return "Removing item stage for " + this.describeRestrictedStacks();
     }
 }
