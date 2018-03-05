@@ -20,6 +20,7 @@ import net.darkhax.gamestages.event.StageDataEvent;
 import net.darkhax.itemstages.jei.PluginItemStages;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.EntityEquipmentSlot.Type;
@@ -165,6 +166,11 @@ public class ItemStages {
             event.getToolTip().add(" ");
             event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + "You can not access this item yet.");
             event.getToolTip().add(TextFormatting.RED + "You need stage " + stage + " first.");
+        }
+
+        else if (stage != null && (event.getEntityPlayer() != null && event.getEntityPlayer().isCreative() || event.getFlags() == ITooltipFlag.TooltipFlags.ADVANCED)) {
+
+            event.getToolTip().add(TextFormatting.BLUE + "Stage: " + TextFormatting.WHITE + stage);
         }
     }
 
