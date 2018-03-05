@@ -13,7 +13,7 @@ public class ConfigurationHandler {
     public static boolean allowEquipRestricted = false;
 
     public static boolean allowInteractRestricted = false;
-    
+
     public static boolean hideRestrictionsInJEI = true;
 
     public ConfigurationHandler (File file) {
