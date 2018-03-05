@@ -14,6 +14,7 @@ import net.darkhax.itemstages.ItemStages;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -48,6 +49,8 @@ public class PluginItemStages implements IModPlugin {
 
             final List<ItemStack> toBlacklist = new ArrayList<>();
             final List<ItemStack> toWhitelist = new ArrayList<>();
+            final List<FluidStack> fluidBlacklist = new ArrayList<>();
+            final List<FluidStack> fluidWhitelist = new ArrayList<>();
 
             // Gets the client player's stage data
             final PlayerDataHandler.IStageData stageData = PlayerDataHandler.getStageData(player);
@@ -71,6 +74,19 @@ public class PluginItemStages implements IModPlugin {
                 }
             }
 
+            for (final String key : ItemStages.FLUID_STAGES.keySet()) {
+
+                if (stageData.hasUnlockedStage(key)) {
+
+                    fluidWhitelist.addAll(ItemStages.FLUID_STAGES.get(key));
+                }
+
+                else {
+
+                    fluidBlacklist.addAll(ItemStages.FLUID_STAGES.get(key));
+                }
+            }
+
             if (!toBlacklist.isEmpty()) {
 
                 ingredientRegistry.removeIngredientsAtRuntime(ItemStack.class, toBlacklist);
@@ -79,6 +95,16 @@ public class PluginItemStages implements IModPlugin {
             if (!toWhitelist.isEmpty()) {
 
                 ingredientRegistry.addIngredientsAtRuntime(ItemStack.class, toWhitelist);
+            }
+
+            if (!fluidBlacklist.isEmpty()) {
+
+                ingredientRegistry.removeIngredientsAtRuntime(FluidStack.class, fluidBlacklist);
+            }
+
+            if (!fluidWhitelist.isEmpty()) {
+
+                ingredientRegistry.addIngredientsAtRuntime(FluidStack.class, fluidWhitelist);
             }
 
             ItemStages.LOG.info("Finished JEI Sync, took " + (System.currentTimeMillis() - time) + "ms. " + toBlacklist.size() + " hidden, " + toWhitelist.size() + " shown.");

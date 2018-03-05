@@ -3,6 +3,7 @@ package net.darkhax.itemstages.compat.crt;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
+import crafttweaker.api.liquid.ILiquidStack;
 import net.darkhax.bookshelf.util.ModUtils;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -36,5 +37,11 @@ public class ItemStagesCrT {
                 CraftTweakerAPI.apply(new ActionAddItemRestriction(stage, item));
             }
         }
+    }
+
+    @ZenMethod
+    public static void stageLiquid (String stage, ILiquidStack stack) {
+
+        CraftTweakerAPI.apply(new ActionStageLiquid(stage, stack));
     }
 }
