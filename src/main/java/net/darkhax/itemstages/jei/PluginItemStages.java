@@ -9,6 +9,7 @@ import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import net.darkhax.gamestages.capabilities.PlayerDataHandler;
+import net.darkhax.itemstages.ConfigurationHandler;
 import net.darkhax.itemstages.ItemStages;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,7 +33,7 @@ public class PluginItemStages implements IModPlugin {
     @SideOnly(Side.CLIENT)
     public static void syncHiddenItems (EntityPlayer player) {
 
-        if (player != null && player.getEntityWorld().isRemote) {
+        if (player != null && player.getEntityWorld().isRemote && ConfigurationHandler.hideRestrictionsInJEI) {
 
             // JEI only allows blacklisting from the main client thread.
             if (!Minecraft.getMinecraft().isCallingFromMinecraftThread()) {
