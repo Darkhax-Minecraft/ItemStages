@@ -8,26 +8,34 @@ import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.darkhax.bookshelf.lib.Constants;
 import net.darkhax.bookshelf.util.StackUtils;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 public abstract class ActionItemStage implements IAction {
 
-    private final IIngredient restricted;
-    private final ItemStack[] restrictions;
+    private ItemStack[] restrictions;
+
+    public ActionItemStage (Item item) {
+
+        this.restrictions = StackUtils.getAllItems(item);
+
+        if (this.restrictions.length == 0) {
+
+            this.restrictions = new ItemStack[] { new ItemStack(item) };
+        }
+    }
 
     public ActionItemStage (IIngredient restricted) {
 
-        this.restricted = restricted;
+        if (restricted instanceof IItemStack && ((IItemStack) restricted).getDamage() == OreDictionary.WILDCARD_VALUE) {
 
-        if (this.restricted instanceof IItemStack && ((IItemStack) this.restricted).getDamage() == OreDictionary.WILDCARD_VALUE) {
-
-            this.restrictions = StackUtils.getAllItems(CraftTweakerMC.getItemStack(this.restricted).getItem());
+            this.restrictions = StackUtils.getAllItems(CraftTweakerMC.getItemStack(restricted).getItem());
         }
 
         else {
 
-            this.restrictions = CraftTweakerMC.getItemStacks(this.restricted.getItems());
+            this.restrictions = CraftTweakerMC.getItemStacks(restricted.getItems());
         }
     }
 
@@ -45,10 +53,10 @@ public abstract class ActionItemStage implements IAction {
 
         // Handle only one item seperatly.
         if (this.restrictions.length == 1) {
-            
+
             return this.describeStack(this.restrictions[0]);
         }
-        
+
         final StringJoiner joiner = new StringJoiner(Constants.NEW_LINE);
 
         for (final ItemStack stack : this.getRestrictedItems()) {
