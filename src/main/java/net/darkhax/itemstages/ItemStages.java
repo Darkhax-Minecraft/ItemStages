@@ -58,16 +58,14 @@ public class ItemStages {
 
     public static String getStage (ItemStack stack) {
 
-        if (stack.isEmpty()) {
+        if (!stack.isEmpty()) {
 
-            return null;
-        }
+            for (final Tuple<ItemStack, String> entry : SORTED_ITEM_STAGES.get(stack.getItem())) {
 
-        for (final Tuple<ItemStack, String> entry : SORTED_ITEM_STAGES.get(stack.getItem())) {
+                if (StageCompare.INSTANCE.isValid(stack, entry.getFirst())) {
 
-            if (StageCompare.INSTANCE.isValid(stack, entry.getFirst())) {
-
-                return entry.getSecond();
+                    return entry.getSecond();
+                }
             }
         }
 
@@ -180,7 +178,7 @@ public class ItemStages {
 
         if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
 
-            PluginItemStages.syncHiddenItems(event.getPlayer());
+            PluginItemStages.syncHiddenItems(event.getEntityPlayer());
         }
     }
 
@@ -190,7 +188,7 @@ public class ItemStages {
 
         if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
 
-            PluginItemStages.syncHiddenItems(event.getPlayer());
+            PluginItemStages.syncHiddenItems(event.getEntityPlayer());
         }
     }
 
