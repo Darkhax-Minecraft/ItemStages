@@ -193,7 +193,6 @@ public class ItemStages {
     }
 
     @EventHandler()
-    @SideOnly(Side.CLIENT)
     public void onLoadComplete (FMLLoadCompleteEvent event) {
 
         LOG.info("Sorting {} staged items.", ITEM_STAGES.size());
@@ -206,6 +205,11 @@ public class ItemStages {
         }
 
         LOG.info("Sorting complete. Found {} stages. Took {}ms", SORTED_STAGES.keySet().size(), System.currentTimeMillis() - time);
+    }
+
+    @EventHandler()
+    @SideOnly(Side.CLIENT)
+    public void onClientLoadComplete (FMLLoadCompleteEvent event) {
 
         // Add a resource reload listener to keep up to sync with JEI.
         ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(listener -> {
