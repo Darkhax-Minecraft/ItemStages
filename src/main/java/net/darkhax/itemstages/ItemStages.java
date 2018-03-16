@@ -157,7 +157,7 @@ public class ItemStages {
         final String stage = getStage(event.getItemStack());
         final IStageData data = PlayerDataHandler.getStageData(event.getEntityPlayer());
 
-        if (stage != null && data != null && !data.hasUnlockedStage(stage)) {
+        if (stage != null && data != null && !data.hasUnlockedStage(stage) && ConfigurationHandler.changeRestrictionTooltip) {
 
             event.getToolTip().clear();
             event.getToolTip().add(TextFormatting.WHITE + "Restricted Item");

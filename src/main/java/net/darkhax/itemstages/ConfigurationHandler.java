@@ -16,6 +16,8 @@ public class ConfigurationHandler {
 
     public static boolean hideRestrictionsInJEI = true;
 
+    public static boolean changeRestrictionTooltip = true;
+
     public ConfigurationHandler (File file) {
 
         config = new Configuration(file);
@@ -28,6 +30,7 @@ public class ConfigurationHandler {
         allowEquipRestricted = config.getBoolean("allowEquipRestricted", Configuration.CATEGORY_GENERAL, false, "Should players be allowed to equip items that are restricted to them.");
         allowInteractRestricted = config.getBoolean("allowInteractRestricted", Configuration.CATEGORY_GENERAL, false, "Should players be allowed to interact (left/right click) with items that are restricted to them.");
         hideRestrictionsInJEI = config.getBoolean("hideRestrictionsInJEI", Configuration.CATEGORY_GENERAL, true, "Should restricted items be hidden in JEI?");
+        changeRestrictionTooltip = config.getBoolean("changeRestrictionTooltip", Configuration.CATEGORY_GENERAL, true, "Should restricted items have their tooltips changed?");
 
         if (config.hasChanged()) {
             config.save();
