@@ -44,4 +44,10 @@ public class ItemStagesCrT {
 
         CraftTweakerAPI.apply(new ActionStageLiquid(stage, stack));
     }
+
+    @ZenMethod
+    public static void setUnfamiliarName (String name, IIngredient input) {
+
+        CraftTweakerAPI.apply(new ActionRenameItem(name, input));
+    }
 }

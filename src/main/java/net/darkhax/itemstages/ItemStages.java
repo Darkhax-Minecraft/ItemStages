@@ -53,6 +53,8 @@ public class ItemStages {
     public static final LoggingHelper LOG = new LoggingHelper("Item Stages");
 
     public static final ItemStackMap<String> ITEM_STAGES = new ItemStackMap<>(StageCompare.INSTANCE);
+    public static final ItemStackMap<String> CUSTOM_NAMES = new ItemStackMap<>(StageCompare.INSTANCE);
+
     public static final ListMultimap<String, ItemStack> SORTED_STAGES = ArrayListMultimap.create();
     public static final SetMultimap<Item, Tuple<ItemStack, String>> SORTED_ITEM_STAGES = Multimaps.newSetMultimap(Maps.newIdentityHashMap(), Sets::newIdentityHashSet);
     public static final ListMultimap<String, FluidStack> FLUID_STAGES = ArrayListMultimap.create();
@@ -73,10 +75,14 @@ public class ItemStages {
         return null;
     }
 
+    private static String getUnfamiliarName (ItemStack stack) {
+
+        return CUSTOM_NAMES.containsKey(stack) ? CUSTOM_NAMES.get(stack) : I18n.format(TRANSLATE_DEFAULT_NAME);
+    }
+
     private static void sendDropMessage (EntityPlayer player, ItemStack stack) {
 
-        final String itemName = I18n.format(TRANSLATE_DEFAULT_NAME);
-        player.sendStatusMessage(new TextComponentTranslation(TRANSLATE_DROP, itemName), true);
+        player.sendStatusMessage(new TextComponentTranslation(TRANSLATE_DROP, getUnfamiliarName(stack)), true);
     }
 
     @Mod.EventHandler
@@ -168,7 +174,7 @@ public class ItemStages {
         if (stage != null && data != null && !data.hasUnlockedStage(stage) && ConfigurationHandler.changeRestrictionTooltip) {
 
             event.getToolTip().clear();
-            event.getToolTip().add(TextFormatting.WHITE + I18n.format(TRANSLATE_DEFAULT_NAME));
+            event.getToolTip().add(TextFormatting.WHITE + getUnfamiliarName(event.getItemStack()));
             event.getToolTip().add(" ");
             event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format(TRANSLATE_DESCRIPTION));
             event.getToolTip().add(TextFormatting.RED + I18n.format(TRANSLATE_INFO, stage));
