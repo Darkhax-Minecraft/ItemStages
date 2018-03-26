@@ -28,7 +28,7 @@ import net.minecraft.inventory.EntityEquipmentSlot.Type;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -75,7 +75,8 @@ public class ItemStages {
 
     private static void sendDropMessage (EntityPlayer player, ItemStack stack) {
 
-        player.sendMessage(new TextComponentString("You dropped the " + stack.getDisplayName() + "! Further progression is required."));
+        final String itemName = I18n.format(TRANSLATE_DEFAULT_NAME);
+        player.sendStatusMessage(new TextComponentTranslation(TRANSLATE_DROP, itemName), true);
     }
 
     @Mod.EventHandler
@@ -155,6 +156,7 @@ public class ItemStages {
     private static final String TRANSLATE_DESCRIPTION = "tooltip.itemstages.description";
     private static final String TRANSLATE_INFO = "tooltip.itemstages.info";
     private static final String TRANSLATE_STAGE = "tooltip.itemstages.stage";
+    private static final String TRANSLATE_DROP = "message.itemstages.drop";
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
