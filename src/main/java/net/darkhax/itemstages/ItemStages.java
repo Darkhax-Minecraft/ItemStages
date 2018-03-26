@@ -19,6 +19,7 @@ import net.darkhax.gamestages.event.GameStageEvent;
 import net.darkhax.gamestages.event.StageDataEvent;
 import net.darkhax.itemstages.jei.PluginItemStages;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -150,6 +151,11 @@ public class ItemStages {
         }
     }
 
+    private static final String TRANSLATE_DEFAULT_NAME = "tooltip.itemstages.name.default";
+    private static final String TRANSLATE_DESCRIPTION = "tooltip.itemstages.description";
+    private static final String TRANSLATE_INFO = "tooltip.itemstages.info";
+    private static final String TRANSLATE_STAGE = "tooltip.itemstages.stage";
+
     @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onTooltip (ItemTooltipEvent event) {
@@ -160,15 +166,15 @@ public class ItemStages {
         if (stage != null && data != null && !data.hasUnlockedStage(stage) && ConfigurationHandler.changeRestrictionTooltip) {
 
             event.getToolTip().clear();
-            event.getToolTip().add(TextFormatting.WHITE + "Restricted Item");
+            event.getToolTip().add(TextFormatting.WHITE + I18n.format(TRANSLATE_DEFAULT_NAME));
             event.getToolTip().add(" ");
-            event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + "You can not access this item yet.");
-            event.getToolTip().add(TextFormatting.RED + "You need stage " + stage + " first.");
+            event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format(TRANSLATE_DESCRIPTION));
+            event.getToolTip().add(TextFormatting.RED + I18n.format(TRANSLATE_INFO, stage));
         }
 
         else if (stage != null && (event.getEntityPlayer() != null && event.getEntityPlayer().isCreative() || event.getFlags() == ITooltipFlag.TooltipFlags.ADVANCED)) {
 
-            event.getToolTip().add(TextFormatting.BLUE + "Stage: " + TextFormatting.WHITE + stage);
+            event.getToolTip().add(TextFormatting.BLUE + I18n.format(TRANSLATE_STAGE) + " " + TextFormatting.WHITE + stage);
         }
     }
 
@@ -192,7 +198,7 @@ public class ItemStages {
         }
     }
 
-    @EventHandler()
+    @EventHandler
     public void onLoadComplete (FMLLoadCompleteEvent event) {
 
         LOG.info("Sorting {} staged items.", ITEM_STAGES.size());
@@ -207,7 +213,7 @@ public class ItemStages {
         LOG.info("Sorting complete. Found {} stages. Took {}ms", SORTED_STAGES.keySet().size(), System.currentTimeMillis() - time);
     }
 
-    @EventHandler()
+    @EventHandler
     @SideOnly(Side.CLIENT)
     public void onClientLoadComplete (FMLLoadCompleteEvent event) {
 
@@ -216,6 +222,7 @@ public class ItemStages {
 
             if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
 
+                LOG.info("Resyncing JEI info.");
                 PluginItemStages.syncHiddenItems(PlayerUtils.getClientPlayer());
             }
         });
