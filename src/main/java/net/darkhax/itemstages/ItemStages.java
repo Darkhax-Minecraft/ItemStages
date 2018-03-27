@@ -75,11 +75,13 @@ public class ItemStages {
         return null;
     }
 
+    @SideOnly(Side.CLIENT)
     private static String getUnfamiliarName (ItemStack stack) {
 
         return CUSTOM_NAMES.containsKey(stack) ? CUSTOM_NAMES.get(stack) : I18n.format(TRANSLATE_DEFAULT_NAME);
     }
 
+    @SideOnly(Side.CLIENT)
     private static void sendDropMessage (EntityPlayer player, ItemStack stack) {
 
         player.sendStatusMessage(new TextComponentTranslation(TRANSLATE_DROP, getUnfamiliarName(stack)), true);
@@ -126,7 +128,7 @@ public class ItemStages {
     @SubscribeEvent
     public void onLivingUpdate (LivingUpdateEvent event) {
 
-        if (PlayerUtils.isPlayerReal(event.getEntityLiving())) {
+        if (event.getEntity() instanceof EntityPlayer) {
 
             final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
             final IStageData data = PlayerDataHandler.getStageData(player);
@@ -152,7 +154,11 @@ public class ItemStages {
 
                     player.setItemStackToSlot(slot, ItemStack.EMPTY);
                     player.dropItem(stack, false);
-                    sendDropMessage(player, stack);
+                    
+                    if (player.world.isRemote) { 
+                        
+                        sendDropMessage(player, stack);
+                    }
                 }
             }
         }
