@@ -28,15 +28,7 @@ public abstract class ActionItemStage implements IAction {
 
     public ActionItemStage (IIngredient restricted) {
 
-        if (restricted instanceof IItemStack && ((IItemStack) restricted).getDamage() == OreDictionary.WILDCARD_VALUE) {
-
-            this.restrictions = StackUtils.getAllItems(CraftTweakerMC.getItemStack(restricted).getItem());
-        }
-
-        else {
-
-            this.restrictions = CraftTweakerMC.getItemStacks(restricted.getItems());
-        }
+        this.restrictions = CraftTweakerMC.getItemStacks(restricted.getItems());
     }
 
     protected ItemStack[] getRestrictedItems () {
