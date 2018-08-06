@@ -91,7 +91,7 @@ public class ItemStages {
     @SubscribeEvent
     public void onPlayerDig (BreakSpeed event) {
         
-        if (!ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
+        if (!ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().world.isRemote && !event.getEntityPlayer().isCreative()) {
             
             final String stage = getStage(event.getEntityPlayer().getHeldItemMainhand());
             
@@ -104,9 +104,25 @@ public class ItemStages {
     }
     
     @SubscribeEvent
+    @SideOnly(Side.CLIENT)
+    public void onClientPlayerDig (BreakSpeed event) {
+        
+        if (!ConfigurationHandler.allowInteractRestricted && event.getEntityPlayer().world.isRemote && !event.getEntityPlayer().isCreative()) {
+            
+            final String stage = getStage(event.getEntityPlayer().getHeldItemMainhand());
+            
+            if (stage != null && !GameStageHelper.clientHasStage(event.getEntityPlayer(), stage)) {
+                
+                event.setNewSpeed(-1f);
+                event.setCanceled(true);
+            }
+        }
+    }
+    
+    @SubscribeEvent
     public void onPlayerInteract (PlayerInteractEvent event) {
         
-        if (event.isCancelable() && !ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
+        if (event.isCancelable() && event.getSide() == Side.SERVER && !ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
             
             final String stage = getStage(event.getItemStack());
             
