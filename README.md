@@ -25,9 +25,20 @@ When something is restricted by this mod, several things will happen to prevent 
 ```
 // Example Script
 
-// Locks stone to stage one
+// Restricts access to stone.
 mods.ItemStages.addItemStage("one", <minecraft:stone>);
 
-// Locks all registered records to stage two
-mods.ItemStages.addItemStage("two", <ore:record>);
+// Restricts access to iron chestplate..
+// Note: With JEI auto hiding, you will need to manually add another entry for the version of the item in JEI.
+mods.ItemStages.addItemStage("one", <minecraft:iron_chestplate>);
+
+// Restricts access to all level 5 enchantments.
+// Note: With JEI auto hiding, you will need to manually add another entry for the version of the item in JEI.
+mods.ItemStages.addItemStage("one", <minecraft:enchanted_book>.withTag({StoredEnchantments: [{lvl: 5 as short}]}));
+
+// Restricts access to Potion of Harming II
+mods.ItemStages.addItemStage("one", <minecraft:potion>.withTag({Potion: "minecraft:strong_harming"}));
+
+// Restricts access to all dyes in the ore dictionary.
+mods.ItemStages.addItemStage("one", <ore:dye>);
 ```
