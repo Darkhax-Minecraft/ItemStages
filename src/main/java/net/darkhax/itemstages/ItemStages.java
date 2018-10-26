@@ -17,7 +17,9 @@ import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.gamestages.event.StagesSyncedEvent;
 import net.darkhax.itemstages.jei.PluginItemStages;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.EntityEquipmentSlot.Type;
@@ -25,6 +27,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -42,120 +45,120 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Mod(modid = "itemstages", name = "Item Stages", version = "@VERSION@", dependencies = "after:jei;required-after:bookshelf;required-after:gamestages@[2.0.89,);required-after:crafttweaker", certificateFingerprint = "@FINGERPRINT@")
 public class ItemStages {
-
+    
     public static final LoggingHelper LOG = new LoggingHelper("Item Stages");
-
+    
     public static final ItemStackMap<String> ITEM_STAGES = new ItemStackMap<>(StageCompare.INSTANCE);
     public static final ItemStackMap<String> CUSTOM_NAMES = new ItemStackMap<>(StageCompare.INSTANCE);
-
+    
     public static final ListMultimap<String, ItemStack> SORTED_STAGES = ArrayListMultimap.create();
     public static final SetMultimap<Item, Tuple<ItemStack, String>> SORTED_ITEM_STAGES = Multimaps.newSetMultimap(Maps.newIdentityHashMap(), Sets::newIdentityHashSet);
     public static final ListMultimap<String, FluidStack> FLUID_STAGES = ArrayListMultimap.create();
-
+    
     public static String getStage (ItemStack stack) {
-
+        
         if (!stack.isEmpty()) {
-
+            
             for (final Tuple<ItemStack, String> entry : SORTED_ITEM_STAGES.get(stack.getItem())) {
-
+                
                 if (StageCompare.INSTANCE.isValid(stack, entry.getFirst())) {
-
+                    
                     return entry.getSecond();
                 }
             }
         }
-
+        
         return null;
     }
-
+    
     private static String getUnfamiliarName (ItemStack stack) {
-
+        
         return CUSTOM_NAMES.containsKey(stack) ? CUSTOM_NAMES.get(stack) : "Unfamiliar Item";
     }
-
+    
     private static void sendDropMessage (EntityPlayer player, ItemStack stack) {
-
+        
         player.sendStatusMessage(new TextComponentTranslation(TRANSLATE_DROP, getUnfamiliarName(stack)), false);
     }
-
+    
     @Mod.EventHandler
     public void preInit (FMLPreInitializationEvent event) {
-
+        
         new ConfigurationHandler(event.getSuggestedConfigurationFile());
         MinecraftForge.EVENT_BUS.register(this);
     }
-
+    
     @SubscribeEvent
     public void onPlayerDig (BreakSpeed event) {
-
+        
         if (!ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().world.isRemote && !event.getEntityPlayer().isCreative()) {
-
+            
             final String stage = getStage(event.getEntityPlayer().getHeldItemMainhand());
-
+            
             if (stage != null && !GameStageHelper.hasStage(event.getEntityPlayer(), stage)) {
-
+                
                 event.setNewSpeed(-1f);
                 event.setCanceled(true);
             }
         }
     }
-
+    
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void onClientPlayerDig (BreakSpeed event) {
-
+        
         if (!ConfigurationHandler.allowInteractRestricted && event.getEntityPlayer().world.isRemote && !event.getEntityPlayer().isCreative()) {
-
+            
             final String stage = getStage(event.getEntityPlayer().getHeldItemMainhand());
-
+            
             if (stage != null && !GameStageHelper.clientHasStage(event.getEntityPlayer(), stage)) {
-
+                
                 event.setNewSpeed(-1f);
                 event.setCanceled(true);
             }
         }
     }
-
+    
     @SubscribeEvent
     public void onPlayerInteract (PlayerInteractEvent event) {
-
+        
         if (event.isCancelable() && event.getSide() == Side.SERVER && !ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
-
+            
             final String stage = getStage(event.getItemStack());
-
+            
             if (stage != null && !GameStageHelper.hasStage(event.getEntityPlayer(), stage)) {
-
+                
                 event.setCanceled(true);
             }
         }
     }
-
+    
     @SubscribeEvent
     public void onLivingUpdate (LivingUpdateEvent event) {
-
+        
         if (event.getEntity() instanceof EntityPlayer && !event.getEntityLiving().world.isRemote) {
-
+            
             final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-
+            
             // Exit early if creative mode.
             if (player.isCreative()) {
-
+                
                 return;
             }
-
+            
             for (final EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
-
+                
                 // Skips the item if the slot type was configured to be ignored.
                 if (ConfigurationHandler.allowHoldingRestricted && slot.getSlotType() == Type.HAND || ConfigurationHandler.allowEquipRestricted && slot.getSlotType() == Type.ARMOR) {
-
+                    
                     continue;
                 }
-
+                
                 final ItemStack stack = player.getItemStackFromSlot(slot);
                 final String stage = getStage(stack);
-
+                
                 if (stage != null && !GameStageHelper.hasStage(player, stage)) {
-
+                    
                     player.setItemStackToSlot(slot, ItemStack.EMPTY);
                     player.dropItem(stack, false);
                     sendDropMessage(player, stack);
@@ -163,80 +166,72 @@ public class ItemStages {
             }
         }
     }
-
+    
     private static final String TRANSLATE_DESCRIPTION = "tooltip.itemstages.description";
     private static final String TRANSLATE_INFO = "tooltip.itemstages.info";
     private static final String TRANSLATE_STAGE = "tooltip.itemstages.stage";
     private static final String TRANSLATE_DROP = "message.itemstages.drop";
-
+    
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onTooltip (ItemTooltipEvent event) {
-
-        // if (event.getEntityPlayer() == null) {
-        //
-        // return;
-        // }
-        //
-        // final String stage = getStage(event.getItemStack());
-        //
-        // if (stage != null &&
-        // !GameStageHelper.clientHasStage(PlayerUtils.getClientPlayer(), stage) &&
-        // ConfigurationHandler.changeRestrictionTooltip) {
-        //
-        // event.getToolTip().clear();
-        // event.getToolTip().add(TextFormatting.WHITE +
-        // getUnfamiliarName(event.getItemStack()));
-        // event.getToolTip().add(" ");
-        // event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC +
-        // I18n.format(TRANSLATE_DESCRIPTION));
-        // event.getToolTip().add(TextFormatting.RED + I18n.format(TRANSLATE_INFO,
-        // stage));
-        // }
-        //
-        // else if (stage != null && (event.getEntityPlayer() != null &&
-        // event.getEntityPlayer().isCreative() || event.getFlags() ==
-        // ITooltipFlag.TooltipFlags.ADVANCED)) {
-        //
-        // event.getToolTip().add(TextFormatting.BLUE + I18n.format(TRANSLATE_STAGE) + "
-        // " + TextFormatting.WHITE + stage);
-        // }
+        
+        if (event.getEntityPlayer() == null) {
+            
+            return;
+        }
+        
+        final String stage = getStage(event.getItemStack());
+        
+        if (stage != null && !GameStageHelper.clientHasStage(PlayerUtils.getClientPlayer(), stage) && ConfigurationHandler.changeRestrictionTooltip) {
+            
+            event.getToolTip().clear();
+            event.getToolTip().add(TextFormatting.WHITE + getUnfamiliarName(event.getItemStack()));
+            event.getToolTip().add(" ");
+            event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format(TRANSLATE_DESCRIPTION));
+            event.getToolTip().add(TextFormatting.RED + I18n.format(TRANSLATE_INFO, stage));
+        }
+        
+        else if (stage != null && (event.getEntityPlayer() != null && event.getEntityPlayer().isCreative() || event.getFlags() == ITooltipFlag.TooltipFlags.ADVANCED)) {
+            
+            event.getToolTip().add(TextFormatting.BLUE + I18n.format(TRANSLATE_STAGE) + " " + TextFormatting.WHITE + stage);
+        }
     }
-
+    
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onClientSync (StagesSyncedEvent event) {
-
+        
         if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
-
+            
             PluginItemStages.syncHiddenItems(event.getEntityPlayer());
         }
     }
-
+    
     @EventHandler
     public void onLoadComplete (FMLLoadCompleteEvent event) {
-
+        
         LOG.info("Sorting {} staged items.", ITEM_STAGES.size());
         final long time = System.currentTimeMillis();
-
+        
         for (final Entry<ItemStack, String> entry : ITEM_STAGES.entrySet()) {
-
+            
             SORTED_STAGES.put(entry.getValue(), entry.getKey());
             SORTED_ITEM_STAGES.put(entry.getKey().getItem(), new Tuple<>(entry.getKey(), entry.getValue()));
         }
-
+        
         LOG.info("Sorting complete. Found {} stages. Took {}ms", SORTED_STAGES.keySet().size(), System.currentTimeMillis() - time);
     }
-
+    
     @EventHandler
     @SideOnly(Side.CLIENT)
     public void onClientLoadComplete (FMLLoadCompleteEvent event) {
-
+        
         // Add a resource reload listener to keep up to sync with JEI.
         ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(listener -> {
-
+            
             if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
-
+                
                 LOG.info("Resyncing JEI info.");
                 PluginItemStages.syncHiddenItems(PlayerUtils.getClientPlayer());
             }
