@@ -46,7 +46,6 @@ public class StageCompare implements IStackComparator {
         // First tag can not be null.
         if (one == null) {
             
-            System.out.println("Failed because one was null.");
             return false;
         }
         
