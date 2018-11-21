@@ -41,4 +41,13 @@ mods.ItemStages.addItemStage("one", <minecraft:potion>.withTag({Potion: "minecra
 
 // Restricts access to all dyes in the ore dictionary.
 mods.ItemStages.addItemStage("one", <ore:dye>);
+
+// Gives an item a different name if it is restricted
+mods.ItemStages.setUnfamiliarName("Clump of Fur", <minecraft:wool:*>);
+
+// Stages a liquid from JEI
+mods.ItemStages.stageLiquid("one", <liquid:water>);
+
+// Stages a tooltip line. All lines that start with target text.
+mods.ItemStages.stageTooltip("one", "When");
 ```
