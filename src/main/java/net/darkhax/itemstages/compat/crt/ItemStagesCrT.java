@@ -50,4 +50,10 @@ public class ItemStagesCrT {
         
         CraftTweakerAPI.apply(new ActionRenameItem(name, input));
     }
+    
+    @ZenMethod
+    public static void stageTooltip(String stage, String tip) {
+        
+        CraftTweakerAPI.apply(new ActionStageTooltip(stage, tip));
+    }
 }

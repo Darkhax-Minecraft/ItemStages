@@ -1,5 +1,7 @@
 package net.darkhax.itemstages;
 
+import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Map.Entry;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -17,6 +19,7 @@ import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.gamestages.event.StagesSyncedEvent;
 import net.darkhax.itemstages.jei.PluginItemStages;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.util.ITooltipFlag;
@@ -54,6 +57,7 @@ public class ItemStages {
     public static final ListMultimap<String, ItemStack> SORTED_STAGES = ArrayListMultimap.create();
     public static final SetMultimap<Item, Tuple<ItemStack, String>> SORTED_ITEM_STAGES = Multimaps.newSetMultimap(Maps.newIdentityHashMap(), Sets::newIdentityHashSet);
     public static final ListMultimap<String, FluidStack> FLUID_STAGES = ArrayListMultimap.create();
+    public static final ListMultimap<String, String> tooltipStages = ArrayListMultimap.create();
     
     public static String getStage (ItemStack stack) {
         
@@ -160,25 +164,48 @@ public class ItemStages {
     @SubscribeEvent
     public void onTooltip (ItemTooltipEvent event) {
         
-        if (event.getEntityPlayer() == null) {
-            
-            return;
-        }
+        final EntityPlayerSP player = PlayerUtils.getClientPlayerSP();
         
-        final String stage = getStage(event.getItemStack());
-        
-        if (stage != null && !GameStageHelper.clientHasStage(PlayerUtils.getClientPlayer(), stage) && ConfigurationHandler.changeRestrictionTooltip) {
+        if (player != null) {
             
-            event.getToolTip().clear();
-            event.getToolTip().add(TextFormatting.WHITE + getUnfamiliarName(event.getItemStack()));
-            event.getToolTip().add(" ");
-            event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format(TRANSLATE_DESCRIPTION));
-            event.getToolTip().add(TextFormatting.RED + I18n.format(TRANSLATE_INFO, stage));
-        }
-        
-        else if (stage != null && (event.getEntityPlayer() != null && event.getEntityPlayer().isCreative() || event.getFlags() == ITooltipFlag.TooltipFlags.ADVANCED)) {
             
-            event.getToolTip().add(TextFormatting.BLUE + I18n.format(TRANSLATE_STAGE) + " " + TextFormatting.WHITE + stage);
+            final String itemsStage = getStage(event.getItemStack());
+            
+            // Add message to items when the player doesn't have access to it.
+            if (itemsStage != null && !GameStageHelper.clientHasStage(player, itemsStage) && ConfigurationHandler.changeRestrictionTooltip) {
+                
+                event.getToolTip().clear();
+                event.getToolTip().add(TextFormatting.WHITE + getUnfamiliarName(event.getItemStack()));
+                event.getToolTip().add(" ");
+                event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format(TRANSLATE_DESCRIPTION));
+                event.getToolTip().add(TextFormatting.RED + I18n.format(TRANSLATE_INFO, itemsStage));
+            }
+            
+            // Adds info about which stage the item is added to. This is more of a debug thing.
+            else if (itemsStage != null && (event.getEntityPlayer() != null && event.getEntityPlayer().isCreative() || event.getFlags() == ITooltipFlag.TooltipFlags.ADVANCED)) {
+                
+                event.getToolTip().add(TextFormatting.BLUE + I18n.format(TRANSLATE_STAGE) + " " + TextFormatting.WHITE + itemsStage);
+            }
+            
+            // Removes tooltip info that has been restricted.
+            for (String tipStage : tooltipStages.keySet()) {
+                
+                if (!GameStageHelper.hasStage(player, tipStage)) {
+                    
+                    for (final Iterator<String> iterator = event.getToolTip().iterator(); iterator.hasNext();) {
+                        
+                        final String tooltipLine = iterator.next();
+                        
+                        for (String restricted : tooltipStages.get(tipStage)) {
+                            
+                            if (tooltipLine.startsWith(restricted)) {
+                                
+                                iterator.remove();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     
