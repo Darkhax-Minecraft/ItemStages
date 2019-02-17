@@ -17,7 +17,7 @@ import net.darkhax.bookshelf.util.GameUtils;
 import net.darkhax.bookshelf.util.PlayerUtils;
 import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.gamestages.event.StagesSyncedEvent;
-import net.darkhax.itemstages.jei.PluginItemStages;
+import net.darkhax.itemstages.compat.jei.PluginItemStages;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.resources.I18n;

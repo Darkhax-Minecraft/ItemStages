@@ -1,4 +1,4 @@
-package net.darkhax.itemstages.jei;
+package net.darkhax.itemstages.compat.jei;
 
 import java.util.ArrayList;
 import java.util.Collection;
