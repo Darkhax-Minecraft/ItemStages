@@ -13,10 +13,11 @@ import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IRecipeCategory;
 import net.darkhax.gamestages.GameStageHelper;
+import net.darkhax.gamestages.GameStages;
 import net.darkhax.itemstages.ConfigurationHandler;
 import net.darkhax.itemstages.ItemStages;
+import net.darkhax.itemstages.commands.CommandDumpJeiStages;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -38,6 +39,8 @@ public class PluginItemStages implements IModPlugin {
         blacklist = registry.getJeiHelpers().getIngredientBlacklist();
         ingredientRegistry = registry.getIngredientRegistry();
         ingredientHelper = ingredientRegistry.getIngredientHelper(VanillaTypes.ITEM);
+        
+        GameStages.COMMAND.addSubcommand(new CommandDumpJeiStages());
     }
     
     @SideOnly(Side.CLIENT)
@@ -113,13 +116,13 @@ public class PluginItemStages implements IModPlugin {
                 ingredientRegistry.addIngredientsAtRuntime(VanillaTypes.FLUID, fluidWhitelist);
             }
             
-            IRecipeRegistry recipeManager = Internal.getRuntime().getRecipeRegistry();
+            final IRecipeRegistry recipeManager = Internal.getRuntime().getRecipeRegistry();
             
-            for (String categoryStage : ItemStages.recipeCategoryStages.keySet()) {
+            for (final String categoryStage : ItemStages.recipeCategoryStages.keySet()) {
                 
-                boolean hasStage = GameStageHelper.hasStage(player, categoryStage);
+                final boolean hasStage = GameStageHelper.hasStage(player, categoryStage);
                 
-                for (String category : ItemStages.recipeCategoryStages.get(categoryStage)) {
+                for (final String category : ItemStages.recipeCategoryStages.get(categoryStage)) {
                     
                     if (hasStage) {
                         
