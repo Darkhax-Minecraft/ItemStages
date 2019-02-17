@@ -47,7 +47,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@Mod(modid = "itemstages", name = "Item Stages", version = "@VERSION@", dependencies = "after:jei;required-after:bookshelf;required-after:gamestages@[2.0.109,);required-after:crafttweaker", certificateFingerprint = "@FINGERPRINT@")
+@Mod(modid = "itemstages", name = "Item Stages", version = "@VERSION@", dependencies = "after:jei@[4.14.4.264,);required-after:bookshelf;required-after:gamestages@[2.0.114,);required-after:crafttweaker", certificateFingerprint = "@FINGERPRINT@")
 public class ItemStages {
     
     public static final LoggingHelper LOG = new LoggingHelper("Item Stages");
