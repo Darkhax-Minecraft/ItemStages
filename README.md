@@ -50,4 +50,7 @@ mods.ItemStages.stageLiquid("one", <liquid:water>);
 
 // Stages a tooltip line. All lines that start with target text.
 mods.ItemStages.stageTooltip("one", "When");
+
+// Stages a recipe category in JEI.
+mods.ItemStages.stageRecipeCategory("eight", "minecraft.anvil");
 ```
