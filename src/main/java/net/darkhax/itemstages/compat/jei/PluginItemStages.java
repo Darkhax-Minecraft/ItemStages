@@ -6,10 +6,12 @@ import java.util.List;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
+import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.VanillaTypes;
 import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.itemstages.ConfigurationHandler;
 import net.darkhax.itemstages.ItemStages;
@@ -26,13 +28,14 @@ public class PluginItemStages implements IModPlugin {
     public static IIngredientBlacklist blacklist;
     public static IIngredientRegistry ingredientRegistry;
     public static IIngredientHelper<ItemStack> ingredientHelper;
+    public static IRecipeRegistry recipeRegistry;
     
     @Override
     public void register (IModRegistry registry) {
         
         blacklist = registry.getJeiHelpers().getIngredientBlacklist();
         ingredientRegistry = registry.getIngredientRegistry();
-        ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
+        ingredientHelper = ingredientRegistry.getIngredientHelper(VanillaTypes.ITEM);
     }
     
     @SideOnly(Side.CLIENT)
@@ -90,22 +93,22 @@ public class PluginItemStages implements IModPlugin {
             
             if (!itemBlacklist.isEmpty()) {
                 
-                ingredientRegistry.removeIngredientsAtRuntime(ItemStack.class, itemBlacklist);
+                ingredientRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, itemBlacklist);
             }
             
             if (!itemWhitelist.isEmpty()) {
                 
-                ingredientRegistry.addIngredientsAtRuntime(ItemStack.class, itemWhitelist);
+                ingredientRegistry.addIngredientsAtRuntime(VanillaTypes.ITEM, itemWhitelist);
             }
             
             if (!fluidBlacklist.isEmpty()) {
                 
-                ingredientRegistry.removeIngredientsAtRuntime(FluidStack.class, fluidBlacklist);
+                ingredientRegistry.removeIngredientsAtRuntime(VanillaTypes.FLUID, fluidBlacklist);
             }
             
             if (!fluidWhitelist.isEmpty()) {
                 
-                ingredientRegistry.addIngredientsAtRuntime(FluidStack.class, fluidWhitelist);
+                ingredientRegistry.addIngredientsAtRuntime(VanillaTypes.FLUID, fluidWhitelist);
             }
             
             ItemStages.LOG.info("Finished JEI Sync, took " + (System.currentTimeMillis() - time) + "ms. " + itemBlacklist.size() + " hidden, " + itemWhitelist.size() + " shown.");
