@@ -173,7 +173,7 @@ public class ItemStages {
             final String itemsStage = getStage(event.getItemStack());
             
             // Add message to items when the player doesn't have access to it.
-            if (itemsStage != null && !GameStageHelper.clientHasStage(player, itemsStage) && ConfigurationHandler.changeRestrictionTooltip) {
+            if (itemsStage != null && !GameStageHelper.hasStage(player, itemsStage) && ConfigurationHandler.changeRestrictionTooltip) {
                 
                 event.getToolTip().clear();
                 event.getToolTip().add(TextFormatting.WHITE + getUnfamiliarName(event.getItemStack()));
@@ -245,7 +245,7 @@ public class ItemStages {
             if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
                 
                 LOG.info("Resyncing JEI info.");
-                PluginItemStages.syncHiddenItems(PlayerUtils.getClientPlayer());
+                PluginItemStages.syncHiddenItems(PlayerUtils.getClientPlayerSP());
             }
         });
     }

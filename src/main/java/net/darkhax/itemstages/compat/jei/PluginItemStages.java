@@ -66,7 +66,7 @@ public class PluginItemStages implements IModPlugin {
                 final List<ItemStack> entries = ItemStages.SORTED_STAGES.get(key);
                 
                 // If player has the stage, it is whitelisted.
-                if (GameStageHelper.clientHasStage(player, key)) {
+                if (GameStageHelper.hasStage(player, key)) {
                     
                     itemWhitelist.addAll(ingredientHelper.expandSubtypes(entries));
                 }
@@ -80,7 +80,7 @@ public class PluginItemStages implements IModPlugin {
             
             for (final String key : ItemStages.FLUID_STAGES.keySet()) {
                 
-                if (GameStageHelper.clientHasStage(player, key)) {
+                if (GameStageHelper.hasStage(player, key)) {
                     
                     fluidWhitelist.addAll(ItemStages.FLUID_STAGES.get(key));
                 }
