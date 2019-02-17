@@ -61,13 +61,13 @@ public class StageCompare implements IStackComparator {
             final NBTTagCompound tagOne = (NBTTagCompound) one;
             final NBTTagCompound tagTwo = (NBTTagCompound) two;
             
-            for (String key : tagTwo.getKeySet()) {
+            for (final String key : tagTwo.getKeySet()) {
                 
                 // Recursively check all the tags on two for partial similarity.
                 if (!arePartiallySimilar(tagOne.getTag(key), tagTwo.getTag(key))) {
                     
                     // Fail if any tag on two is not partially similar to the counterpart on
-                        // one.
+                    // one.
                     return false;
                 }
             }

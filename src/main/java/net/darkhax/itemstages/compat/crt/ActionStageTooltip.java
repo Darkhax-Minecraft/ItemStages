@@ -16,13 +16,13 @@ public class ActionStageTooltip implements IAction {
     
     @Override
     public void apply () {
-
-        ItemStages.tooltipStages.put(stage, tooltip);
+        
+        ItemStages.tooltipStages.put(this.stage, this.tooltip);
     }
     
     @Override
     public String describe () {
         
-        return "Restring tooltips that start with \"" + this.tooltip + "\" to stage " + stage;
+        return "Restring tooltips that start with \"" + this.tooltip + "\" to stage " + this.stage;
     }
 }

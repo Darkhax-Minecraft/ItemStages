@@ -1,7 +1,6 @@
 package net.darkhax.itemstages;
 
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.Map.Entry;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -170,7 +169,6 @@ public class ItemStages {
         
         if (player != null) {
             
-            
             final String itemsStage = getStage(event.getItemStack());
             
             // Add message to items when the player doesn't have access to it.
@@ -190,7 +188,7 @@ public class ItemStages {
             }
             
             // Removes tooltip info that has been restricted.
-            for (String tipStage : tooltipStages.keySet()) {
+            for (final String tipStage : tooltipStages.keySet()) {
                 
                 if (!GameStageHelper.hasStage(player, tipStage)) {
                     
@@ -198,7 +196,7 @@ public class ItemStages {
                         
                         final String tooltipLine = iterator.next();
                         
-                        for (String restricted : tooltipStages.get(tipStage)) {
+                        for (final String restricted : tooltipStages.get(tipStage)) {
                             
                             if (tooltipLine.startsWith(restricted)) {
                                 

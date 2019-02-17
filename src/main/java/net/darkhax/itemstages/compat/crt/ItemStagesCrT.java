@@ -52,13 +52,13 @@ public class ItemStagesCrT {
     }
     
     @ZenMethod
-    public static void stageTooltip(String stage, String tip) {
+    public static void stageTooltip (String stage, String tip) {
         
         CraftTweakerAPI.apply(new ActionStageTooltip(stage, tip));
     }
     
     @ZenMethod
-    public static void stageRecipeCategory(String stage, String category) {
+    public static void stageRecipeCategory (String stage, String category) {
         
         CraftTweakerAPI.apply(new ActionStageRecipeCategory(stage, category));
     }

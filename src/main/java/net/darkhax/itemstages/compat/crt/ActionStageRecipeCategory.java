@@ -16,13 +16,13 @@ public class ActionStageRecipeCategory implements IAction {
     
     @Override
     public void apply () {
-
-        ItemStages.recipeCategoryStages.put(stage, categoryId);
+        
+        ItemStages.recipeCategoryStages.put(this.stage, this.categoryId);
     }
     
     @Override
     public String describe () {
         
-        return "Restring recipe categorie with id \"" + this.categoryId + "\" to stage " + stage;
+        return "Restring recipe categorie with id \"" + this.categoryId + "\" to stage " + this.stage;
     }
 }
