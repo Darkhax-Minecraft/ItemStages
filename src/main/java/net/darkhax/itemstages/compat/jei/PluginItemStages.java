@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
@@ -12,6 +13,7 @@ import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.IRecipeCategory;
 import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.itemstages.ConfigurationHandler;
 import net.darkhax.itemstages.ItemStages;
@@ -109,6 +111,26 @@ public class PluginItemStages implements IModPlugin {
             if (!fluidWhitelist.isEmpty()) {
                 
                 ingredientRegistry.addIngredientsAtRuntime(VanillaTypes.FLUID, fluidWhitelist);
+            }
+            
+            IRecipeRegistry recipeManager = Internal.getRuntime().getRecipeRegistry();
+            
+            for (String categoryStage : ItemStages.recipeCategoryStages.keySet()) {
+                
+                boolean hasStage = GameStageHelper.hasStage(player, categoryStage);
+                
+                for (String category : ItemStages.recipeCategoryStages.get(categoryStage)) {
+                    
+                    if (hasStage) {
+                        
+                        recipeManager.unhideRecipeCategory(category);
+                    }
+                    
+                    else {
+                        
+                        recipeManager.hideRecipeCategory(category);
+                    }
+                }
             }
             
             ItemStages.LOG.info("Finished JEI Sync, took " + (System.currentTimeMillis() - time) + "ms. " + itemBlacklist.size() + " hidden, " + itemWhitelist.size() + " shown.");

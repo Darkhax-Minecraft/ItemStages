@@ -56,4 +56,10 @@ public class ItemStagesCrT {
         
         CraftTweakerAPI.apply(new ActionStageTooltip(stage, tip));
     }
+    
+    @ZenMethod
+    public static void stageRecipeCategory(String stage, String category) {
+        
+        CraftTweakerAPI.apply(new ActionStageRecipeCategory(stage, category));
+    }
 }

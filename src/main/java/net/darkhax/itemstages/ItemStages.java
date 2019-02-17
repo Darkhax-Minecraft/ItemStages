@@ -59,6 +59,7 @@ public class ItemStages {
     public static final SetMultimap<Item, Tuple<ItemStack, String>> SORTED_ITEM_STAGES = Multimaps.newSetMultimap(Maps.newIdentityHashMap(), Sets::newIdentityHashSet);
     public static final ListMultimap<String, FluidStack> FLUID_STAGES = ArrayListMultimap.create();
     public static final ListMultimap<String, String> tooltipStages = ArrayListMultimap.create();
+    public static final ListMultimap<String, String> recipeCategoryStages = ArrayListMultimap.create();
     
     public static String getStage (ItemStack stack) {
         
