@@ -134,12 +134,12 @@ public class PluginItemStages implements IModPlugin {
 
             if (!enchantBlacklist.isEmpty()) {
 
-                ingredientRegistry.removeIngredientsAtRuntime(EnchantmentData.class, enchantBlacklist);
+                ingredientRegistry.removeIngredientsAtRuntime(EnchantmentType.ENCHANT, enchantBlacklist);
             }
 
             if (!enchantWhitelist.isEmpty()) {
 
-                ingredientRegistry.addIngredientsAtRuntime(EnchantmentData.class, enchantWhitelist);
+                ingredientRegistry.addIngredientsAtRuntime(EnchantmentType.ENCHANT, enchantWhitelist);
             }
 
             final IRecipeRegistry recipeManager = Internal.getRuntime().getRecipeRegistry();
