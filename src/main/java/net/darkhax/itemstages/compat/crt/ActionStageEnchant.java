@@ -30,9 +30,12 @@ public class ActionStageEnchant implements IAction {
         }
 
         for (int lvl = enchantment.getMinLevel(); lvl <= enchantment.getMaxLevel(); lvl++) {
+
             final EnchantmentData enchantment = new EnchantmentData((Enchantment) this.enchantment.getInternal(), lvl);
+
             final ItemStack enchantedBook = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation("minecraft:enchanted_book")));
             ItemEnchantedBook.addEnchantment(enchantedBook, enchantment);
+
             ItemStages.ENCHANT_STAGES.put(this.stage, enchantment);
             ItemStages.ITEM_STAGES.put(enchantedBook, this.stage);
         }

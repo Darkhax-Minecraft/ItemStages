@@ -54,9 +54,9 @@ mods.ItemStages.stageTooltip("one", "When");
 // Stages a recipe category in JEI.
 mods.ItemStages.stageRecipeCategory("eight", "minecraft.anvil");
 
-//Stages an enchantment (in JEI)
+// Stages an enchantment (in JEI)
 mods.ItemStages.stageEnchant("one", <enchantment:minecraft:protection>);
 
-//Stages an enchantment by level (in JEI)
+// Stages an enchantment by level (in JEI)
 mods.ItemStages.stageEnchantByLevel("one", <enchantment:minecraft:projectile_protection>.makeEnchantment(1));
 ```
