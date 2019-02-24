@@ -22,6 +22,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.EntityEquipmentSlot.Type;
@@ -57,6 +58,7 @@ public class ItemStages {
     public static final ListMultimap<String, ItemStack> SORTED_STAGES = ArrayListMultimap.create();
     public static final SetMultimap<Item, Tuple<ItemStack, String>> SORTED_ITEM_STAGES = Multimaps.newSetMultimap(Maps.newIdentityHashMap(), Sets::newIdentityHashSet);
     public static final ListMultimap<String, FluidStack> FLUID_STAGES = ArrayListMultimap.create();
+    public static final ListMultimap<String, EnchantmentData> ENCHANT_STAGES = ArrayListMultimap.create();
     public static final ListMultimap<String, String> tooltipStages = ArrayListMultimap.create();
     public static final ListMultimap<String, String> recipeCategoryStages = ArrayListMultimap.create();
     

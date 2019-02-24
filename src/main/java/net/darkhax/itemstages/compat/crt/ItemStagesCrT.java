@@ -2,6 +2,8 @@ package net.darkhax.itemstages.compat.crt;
 
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.enchantments.IEnchantment;
+import crafttweaker.api.enchantments.IEnchantmentDefinition;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.liquid.ILiquidStack;
 import net.darkhax.bookshelf.util.ModUtils;
@@ -43,6 +45,18 @@ public class ItemStagesCrT {
     public static void stageLiquid (String stage, ILiquidStack stack) {
         
         CraftTweakerAPI.apply(new ActionStageLiquid(stage, stack));
+    }
+
+    @ZenMethod
+    public static void stageEnchant (String stage, IEnchantmentDefinition enchantment) {
+
+        CraftTweakerAPI.apply(new ActionStageEnchant(stage, enchantment));
+    }
+
+    @ZenMethod
+    public static void stageEnchantByLevel (String stage, IEnchantment enchantmentDefinition) {
+
+        CraftTweakerAPI.apply(new ActionStageEnchantByLevel(stage, enchantmentDefinition));
     }
     
     @ZenMethod

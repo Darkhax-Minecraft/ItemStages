@@ -19,6 +19,7 @@ import net.darkhax.itemstages.ConfigurationHandler;
 import net.darkhax.itemstages.ItemStages;
 import net.darkhax.itemstages.commands.CommandDumpJeiStages;
 import net.minecraft.client.Minecraft;
+import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -63,6 +64,8 @@ public class PluginItemStages implements IModPlugin {
             final Collection<ItemStack> itemWhitelist = new ArrayList<>();
             final Collection<FluidStack> fluidBlacklist = new ArrayList<>();
             final Collection<FluidStack> fluidWhitelist = new ArrayList<>();
+            final Collection<EnchantmentData> enchantWhitelist = new ArrayList<>();
+            final Collection<EnchantmentData> enchantBlacklist = new ArrayList<>();
             
             // Loops through all the known stages
             for (final String key : ItemStages.SORTED_STAGES.keySet()) {
@@ -95,6 +98,19 @@ public class PluginItemStages implements IModPlugin {
                     fluidBlacklist.addAll(ItemStages.FLUID_STAGES.get(key));
                 }
             }
+
+            for (final String key : ItemStages.ENCHANT_STAGES.keySet()) {
+
+                if (GameStageHelper.hasStage(player, key)) {
+
+                    enchantWhitelist.addAll(ItemStages.ENCHANT_STAGES.get(key));
+                }
+
+                else {
+
+                    enchantBlacklist.addAll(ItemStages.ENCHANT_STAGES.get(key));
+                }
+            }
             
             if (!itemBlacklist.isEmpty()) {
                 
@@ -115,7 +131,17 @@ public class PluginItemStages implements IModPlugin {
                 
                 ingredientRegistry.addIngredientsAtRuntime(VanillaTypes.FLUID, fluidWhitelist);
             }
-            
+
+            if (!enchantBlacklist.isEmpty()) {
+
+                ingredientRegistry.removeIngredientsAtRuntime(EnchantmentData.class, enchantBlacklist);
+            }
+
+            if (!enchantWhitelist.isEmpty()) {
+
+                ingredientRegistry.addIngredientsAtRuntime(EnchantmentData.class, enchantWhitelist);
+            }
+
             final IRecipeRegistry recipeManager = Internal.getRuntime().getRecipeRegistry();
             
             for (final String categoryStage : ItemStages.recipeCategoryStages.keySet()) {
