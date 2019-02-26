@@ -29,7 +29,7 @@ public class ConfigurationHandler {
     private void syncConfigData () {
         
         allowHoldingRestricted = config.getBoolean("allowHoldingRestricted", Configuration.CATEGORY_GENERAL, false, "Should players be allowed to hold items that are restricted to them.");
-        allowHoldingRestrictedEnchant = config.getBoolean("allowHoldingRestrictedEnchant", Configuration.CATEGORY_GENERAL, true, "Should players be allowed to hold items that have an enchantment they don't yet understand.");
+        allowHoldingRestrictedEnchant = config.getBoolean("allowHoldingRestrictedEnchant", Configuration.CATEGORY_GENERAL, true, "Should players be allowed to hold items that have an enchantment they is restricted to them.");
         allowEquipRestricted = config.getBoolean("allowEquipRestricted", Configuration.CATEGORY_GENERAL, false, "Should players be allowed to equip items that are restricted to them.");
         allowInteractRestricted = config.getBoolean("allowInteractRestricted", Configuration.CATEGORY_GENERAL, false, "Should players be allowed to interact (left/right click) with items that are restricted to them.");
         hideRestrictionsInJEI = config.getBoolean("hideRestrictionsInJEI", Configuration.CATEGORY_GENERAL, true, "Should restricted items be hidden in JEI?");
