@@ -20,7 +20,7 @@ public class StageCompare implements IStackComparator {
             
             final NBTTagCompound first = StackUtils.getTagCleanly(entryStack);
             final NBTTagCompound two = StackUtils.getTagCleanly(stack);
-            return !this.isTagEmpty(entryStack) && arePartiallySimilar(first, two) || this.isTagEmpty(stack) && this.isTagEmpty(entryStack) && StackUtils.areStacksSimilar(stack, entryStack);
+            return !this.isTagEmpty(stack) && arePartiallySimilar(first, two) || this.isTagEmpty(stack) && this.isTagEmpty(entryStack) && StackUtils.areStacksSimilar(stack, entryStack) || !two.hasKey("ench") && first.hasKey("ench") && arePartiallySimilar(first, two);
         }
         
         return false;

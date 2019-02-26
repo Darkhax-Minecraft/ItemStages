@@ -67,8 +67,6 @@ public class ItemStages {
     public static final ListMultimap<String, String> tooltipStages = ArrayListMultimap.create();
     public static final ListMultimap<String, String> recipeCategoryStages = ArrayListMultimap.create();
 
-    public static boolean jeidPresent;
-    
     public static String getStage (ItemStack stack) {
         
         if (!stack.isEmpty()) {
