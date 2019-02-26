@@ -19,7 +19,6 @@ import net.darkhax.itemstages.ConfigurationHandler;
 import net.darkhax.itemstages.ItemStages;
 import net.darkhax.itemstages.commands.CommandDumpJeiStages;
 import net.minecraft.client.Minecraft;
-import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;

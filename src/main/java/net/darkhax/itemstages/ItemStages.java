@@ -201,7 +201,7 @@ public class ItemStages {
 
                 String enchantStage = null;
 
-                if (!ConfigurationHandler.allowHoldingRestrictedEnchant && slot.getSlotType() == Type.HAND) {
+                if (!ConfigurationHandler.allowHoldingRestrictedEnchant && !(slot.getSlotType() == Type.HAND)) {
                     enchantStage = getEnchantStage(stack);
                 }
                 
