@@ -1,7 +1,9 @@
 package net.darkhax.itemstages;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Map;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -22,7 +24,9 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.EntityEquipmentSlot.Type;
@@ -33,6 +37,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -58,7 +63,7 @@ public class ItemStages {
     public static final ListMultimap<String, ItemStack> SORTED_STAGES = ArrayListMultimap.create();
     public static final SetMultimap<Item, Tuple<ItemStack, String>> SORTED_ITEM_STAGES = Multimaps.newSetMultimap(Maps.newIdentityHashMap(), Sets::newIdentityHashSet);
     public static final ListMultimap<String, FluidStack> FLUID_STAGES = ArrayListMultimap.create();
-    public static final ListMultimap<String, EnchantmentData> ENCHANT_STAGES = ArrayListMultimap.create();
+    public static final Map<EnchantmentData, String> ENCHANT_STAGES = new HashMap<>();
     public static final ListMultimap<String, String> tooltipStages = ArrayListMultimap.create();
     public static final ListMultimap<String, String> recipeCategoryStages = ArrayListMultimap.create();
     
@@ -77,6 +82,27 @@ public class ItemStages {
         
         return null;
     }
+
+    public static String getEnchantStage (ItemStack stack) {
+
+        if (!stack.isEmpty()) {
+
+            Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack);
+
+            for (final Entry<Enchantment, Integer> enchant : map.entrySet()) {
+
+                for (final Entry<EnchantmentData, String> enchantStage : ENCHANT_STAGES.entrySet()) {
+
+                    if (enchantStage.getKey().enchantment == enchant.getKey() && enchantStage.getKey().enchantmentLevel == enchant.getValue()) {
+
+                        return enchantStage.getValue();
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
     
     private static String getUnfamiliarName (ItemStack stack) {
         
@@ -86,6 +112,11 @@ public class ItemStages {
     private static void sendDropMessage (EntityPlayer player, ItemStack stack) {
         
         player.sendStatusMessage(new TextComponentTranslation(TRANSLATE_DROP, getUnfamiliarName(stack)), false);
+    }
+
+    private static void sendAttackFailMessage (EntityPlayer player, ItemStack stack) {
+
+        player.sendStatusMessage(new TextComponentTranslation(TRANSLATE_ATTACK, stack.getDisplayName()), false);
     }
     
     @Mod.EventHandler
@@ -99,12 +130,32 @@ public class ItemStages {
     public void onPlayerDig (BreakSpeed event) {
         
         if (!ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
+
+            ItemStack heldItem = event.getEntityPlayer().getHeldItemMainhand();
+
+            final String stage = getStage(heldItem);
+
+            final String enchantStage = getEnchantStage(heldItem);
             
-            final String stage = getStage(event.getEntityPlayer().getHeldItemMainhand());
-            
-            if (stage != null && !GameStageHelper.hasStage(event.getEntityPlayer(), stage)) {
+            if ((stage != null && !GameStageHelper.hasStage(event.getEntityPlayer(), stage)) ||
+                    (enchantStage != null && !GameStageHelper.hasStage(event.getEntityPlayer(), enchantStage))) {
                 
                 event.setNewSpeed(-1f);
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerAttack (AttackEntityEvent event) {
+
+        if (!ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
+
+            final String stage = getEnchantStage(event.getEntityPlayer().getHeldItemMainhand());
+
+            if ((stage != null && !GameStageHelper.hasStage(event.getEntityPlayer(), stage))) {
+
+                sendAttackFailMessage(event.getEntityPlayer(), event.getEntityPlayer().getHeldItemMainhand()); // Currently spams player
                 event.setCanceled(true);
             }
         }
@@ -147,8 +198,15 @@ public class ItemStages {
                 
                 final ItemStack stack = player.getItemStackFromSlot(slot);
                 final String stage = getStage(stack);
+
+                String enchantStage = null;
+
+                if (!ConfigurationHandler.allowHoldingRestrictedEnchant && slot.getSlotType() == Type.HAND) {
+                    enchantStage = getEnchantStage(stack);
+                }
                 
-                if (stage != null && !GameStageHelper.hasStage(player, stage)) {
+                if ((stage != null && !GameStageHelper.hasStage(player, stage)) ||
+                        (enchantStage != null && !GameStageHelper.hasStage(player, enchantStage))) {
                     
                     player.setItemStackToSlot(slot, ItemStack.EMPTY);
                     player.dropItem(stack, false);
@@ -159,9 +217,11 @@ public class ItemStages {
     }
     
     private static final String TRANSLATE_DESCRIPTION = "tooltip.itemstages.description";
+    private static final String TRANSLATE_ENCHANT_DESCRIPTION = "tooltip.itemstages.enchant";
     private static final String TRANSLATE_INFO = "tooltip.itemstages.info";
     private static final String TRANSLATE_STAGE = "tooltip.itemstages.stage";
     private static final String TRANSLATE_DROP = "message.itemstages.drop";
+    private static final String TRANSLATE_ATTACK = "message.itemstages.attack";
     
     @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -172,6 +232,7 @@ public class ItemStages {
         if (player != null) {
             
             final String itemsStage = getStage(event.getItemStack());
+            final String enchantStage = getEnchantStage(event.getItemStack());
             
             // Add message to items when the player doesn't have access to it.
             if (itemsStage != null && !GameStageHelper.hasStage(player, itemsStage) && ConfigurationHandler.changeRestrictionTooltip) {
@@ -181,6 +242,13 @@ public class ItemStages {
                 event.getToolTip().add(" ");
                 event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format(TRANSLATE_DESCRIPTION));
                 event.getToolTip().add(TextFormatting.RED + I18n.format(TRANSLATE_INFO, itemsStage));
+            }
+
+            if (enchantStage != null && !GameStageHelper.hasStage(player,enchantStage) && ConfigurationHandler.changeRestrictionTooltip) {
+
+                event.getToolTip().add(" ");
+                event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format(TRANSLATE_ENCHANT_DESCRIPTION));
+                event.getToolTip().add(TextFormatting.RED + I18n.format(TRANSLATE_INFO, enchantStage));
             }
             
             // Adds info about which stage the item is added to. This is more of a debug thing.

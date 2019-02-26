@@ -36,7 +36,7 @@ public class ActionStageEnchant implements IAction {
             final ItemStack enchantedBook = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation("minecraft:enchanted_book")));
             ItemEnchantedBook.addEnchantment(enchantedBook, enchantment);
 
-            ItemStages.ENCHANT_STAGES.put(this.stage, enchantment);
+            ItemStages.ENCHANT_STAGES.put(enchantment, this.stage);
             ItemStages.ITEM_STAGES.put(enchantedBook, this.stage);
         }
     }
