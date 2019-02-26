@@ -5,12 +5,10 @@ import crafttweaker.api.enchantments.IEnchantmentDefinition;
 import net.darkhax.itemstages.ItemStages;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-
-import java.util.HashMap;
 
 public class ActionStageEnchant implements IAction {
 
@@ -36,7 +34,7 @@ public class ActionStageEnchant implements IAction {
             final EnchantmentData enchantment = new EnchantmentData((Enchantment) this.enchantment.getInternal(), lvl);
 
             final ItemStack enchantedBook = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation("minecraft:enchanted_book")));
-            EnchantmentHelper.setEnchantments(new HashMap<Enchantment, Integer>(){{put(enchantment.enchantment, enchantment.enchantmentLevel);}}, enchantedBook);
+            ItemEnchantedBook.addEnchantment(enchantedBook, enchantment);
 
             ItemStages.ENCHANT_STAGES.put(enchantment, this.stage);
             ItemStages.ITEM_STAGES.put(enchantedBook, this.stage);

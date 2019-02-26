@@ -66,6 +66,8 @@ public class ItemStages {
     public static final Map<EnchantmentData, String> ENCHANT_STAGES = new HashMap<>();
     public static final ListMultimap<String, String> tooltipStages = ArrayListMultimap.create();
     public static final ListMultimap<String, String> recipeCategoryStages = ArrayListMultimap.create();
+
+    public static boolean jeidPresent;
     
     public static String getStage (ItemStack stack) {
         
@@ -121,11 +123,11 @@ public class ItemStages {
     
     @Mod.EventHandler
     public void preInit (FMLPreInitializationEvent event) {
-        
+
         new ConfigurationHandler(event.getSuggestedConfigurationFile());
         MinecraftForge.EVENT_BUS.register(this);
     }
-    
+
     @SubscribeEvent
     public void onPlayerDig (BreakSpeed event) {
         
@@ -201,7 +203,7 @@ public class ItemStages {
 
                 String enchantStage = null;
 
-                if (!ConfigurationHandler.allowHoldingRestrictedEnchant && !(slot.getSlotType() == Type.HAND)) {
+                if (!ConfigurationHandler.allowHoldingRestrictedEnchant || !(slot.getSlotType() == Type.HAND)) {
                     enchantStage = getEnchantStage(stack);
                 }
                 
