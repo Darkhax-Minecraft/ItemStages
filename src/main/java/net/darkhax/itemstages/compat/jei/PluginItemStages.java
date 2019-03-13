@@ -63,7 +63,7 @@ public class PluginItemStages implements IModPlugin {
             final Collection<ItemStack> itemWhitelist = new ArrayList<>();
             final Collection<FluidStack> fluidBlacklist = new ArrayList<>();
             final Collection<FluidStack> fluidWhitelist = new ArrayList<>();
-
+            
             // Loops through all the known stages
             for (final String key : ItemStages.SORTED_STAGES.keySet()) {
                 
@@ -95,7 +95,7 @@ public class PluginItemStages implements IModPlugin {
                     fluidBlacklist.addAll(ItemStages.FLUID_STAGES.get(key));
                 }
             }
-
+            
             if (!itemBlacklist.isEmpty()) {
                 
                 ingredientRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, itemBlacklist);
@@ -115,7 +115,7 @@ public class PluginItemStages implements IModPlugin {
                 
                 ingredientRegistry.addIngredientsAtRuntime(VanillaTypes.FLUID, fluidWhitelist);
             }
-
+            
             final IRecipeRegistry recipeManager = Internal.getRuntime().getRecipeRegistry();
             
             for (final String categoryStage : ItemStages.recipeCategoryStages.keySet()) {

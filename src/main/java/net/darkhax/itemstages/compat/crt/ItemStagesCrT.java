@@ -49,13 +49,13 @@ public class ItemStagesCrT {
 
     @ZenMethod
     public static void stageEnchant (String stage, IEnchantmentDefinition enchantment) {
-
+        
         CraftTweakerAPI.apply(new ActionStageEnchant(stage, enchantment));
     }
 
     @ZenMethod
     public static void stageEnchantByLevel (String stage, IEnchantment enchantmentDefinition) {
-
+        
         CraftTweakerAPI.apply(new ActionStageEnchantByLevel(stage, enchantmentDefinition));
     }
     

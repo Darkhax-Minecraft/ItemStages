@@ -66,7 +66,7 @@ public class ItemStages {
     public static final Map<EnchantmentData, String> ENCHANT_STAGES = new HashMap<>();
     public static final ListMultimap<String, String> tooltipStages = ArrayListMultimap.create();
     public static final ListMultimap<String, String> recipeCategoryStages = ArrayListMultimap.create();
-
+    
     public static String getStage (ItemStack stack) {
         
         if (!stack.isEmpty()) {
@@ -121,16 +121,16 @@ public class ItemStages {
     
     @Mod.EventHandler
     public void preInit (FMLPreInitializationEvent event) {
-
+        
         new ConfigurationHandler(event.getSuggestedConfigurationFile());
         MinecraftForge.EVENT_BUS.register(this);
     }
-
+    
     @SubscribeEvent
     public void onPlayerDig (BreakSpeed event) {
         
         if (!ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
-
+            
             ItemStack heldItem = event.getEntityPlayer().getHeldItemMainhand();
 
             final String stage = getStage(heldItem);
@@ -148,15 +148,15 @@ public class ItemStages {
 
     @SubscribeEvent
     public void onPlayerAttack (AttackEntityEvent event) {
-
+        
         if (!ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
-
+            
             final String stage = getEnchantStage(event.getEntityPlayer().getHeldItemMainhand());
-
+            
             if ((stage != null && !GameStageHelper.hasStage(event.getEntityPlayer(), stage))) {
-
+                
                 if (event.getEntityPlayer().world.getTotalWorldTime() % 2 == 0) {
-
+                    
                     sendAttackFailMessage(event.getEntityPlayer(), event.getEntityPlayer().getHeldItemMainhand());
                 }
                 event.setCanceled(true);
@@ -201,10 +201,11 @@ public class ItemStages {
                 
                 final ItemStack stack = player.getItemStackFromSlot(slot);
                 final String stage = getStage(stack);
-
+                
                 String enchantStage = null;
-
+                
                 if (!ConfigurationHandler.allowHoldingRestrictedEnchant || !(slot.getSlotType() == Type.HAND)) {
+                    
                     enchantStage = getEnchantStage(stack);
                 }
                 
@@ -248,7 +249,7 @@ public class ItemStages {
             }
 
             if (enchantStage != null && !GameStageHelper.hasStage(player,enchantStage) && ConfigurationHandler.changeRestrictionTooltip) {
-
+                
                 event.getToolTip().add(" ");
                 event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format(TRANSLATE_ENCHANT_DESCRIPTION));
                 event.getToolTip().add(TextFormatting.RED + I18n.format(TRANSLATE_INFO, enchantStage));
