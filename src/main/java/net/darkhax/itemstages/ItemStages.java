@@ -155,7 +155,10 @@ public class ItemStages {
 
             if ((stage != null && !GameStageHelper.hasStage(event.getEntityPlayer(), stage))) {
 
-                sendAttackFailMessage(event.getEntityPlayer(), event.getEntityPlayer().getHeldItemMainhand()); // Currently spams player
+                if (event.getEntityPlayer().world.getTotalWorldTime() % 2 == 0) {
+
+                    sendAttackFailMessage(event.getEntityPlayer(), event.getEntityPlayer().getHeldItemMainhand());
+                }
                 event.setCanceled(true);
             }
         }
