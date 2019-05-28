@@ -42,9 +42,15 @@ public class ItemStagesCrT {
     }
     
     @ZenMethod
+    public static void stageLiquidAndBucket (String stage, ILiquidStack stack) {
+        
+        CraftTweakerAPI.apply(new ActionStageLiquid(stage, stack, true));
+    }
+    
+    @ZenMethod
     public static void stageLiquid (String stage, ILiquidStack stack) {
         
-        CraftTweakerAPI.apply(new ActionStageLiquid(stage, stack));
+        CraftTweakerAPI.apply(new ActionStageLiquid(stage, stack, false));
     }
 
     @ZenMethod
