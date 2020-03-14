@@ -1,0 +1,10 @@
+#Chinese ItemStages Translation
+tooltip.itemstages.name.default=未知的物品
+tooltip.itemstages.description=你尚未了解这种物品的使用方法。
+tooltip.itemstages.info=你需要先解锁阶段%s。
+tooltip.itemstages.stage=游戏阶段：
+tooltip.itemstages.enchant=你还不了解它的附魔，不能使用它。
+
+message.itemstages.drop=你丢弃了%s。
+
+message.itemstages.attack=了解它的附魔之前，你不能使用%s造成伤害。
