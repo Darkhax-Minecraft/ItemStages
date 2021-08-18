@@ -1,0 +1,37 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+issueTrackerURL="https://github.com/Darkhax-Minecraft/itemstages/issues"
+license="ARR"
+
+[[mods]]
+modId="itemstages"
+updateJSONURL="https://updates.blamejared.com/get?n=itemstages&gv=1.16.5"
+version="${version}"
+displayName="${mod_name}"
+displayURL="${mod_download}"
+credits="${mod_credits}"
+authors="${mod_authors}"
+description='''
+${mod_description}
+'''
+
+[[dependencies.itemstages]]
+    modId="forge"
+    mandatory=true
+    versionRange="[32,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.itemstages]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.5]"
+    ordering="NONE"
+    side="BOTH"
+	
+[[dependencies.itemstages]]
+    modId="bookshelf"
+    mandatory=true
+    versionRange="[10.0,)"
+    ordering="AFTER"
+    side="BOTH"

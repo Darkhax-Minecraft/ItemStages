@@ -1,325 +1,210 @@
 package net.darkhax.itemstages;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SetMultimap;
-import com.google.common.collect.Sets;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import net.darkhax.bookshelf.lib.ItemStackMap;
-import net.darkhax.bookshelf.lib.LoggingHelper;
-import net.darkhax.bookshelf.util.GameUtils;
-import net.darkhax.bookshelf.util.PlayerUtils;
+import net.darkhax.bookshelf.util.TextUtils;
 import net.darkhax.gamestages.GameStageHelper;
-import net.darkhax.gamestages.event.StagesSyncedEvent;
-import net.darkhax.itemstages.compat.jei.PluginItemStages;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.inventory.EntityEquipmentSlot.Type;
-import net.minecraft.item.Item;
+import net.darkhax.gamestages.data.GameStageSaveHandler;
+import net.darkhax.gamestages.data.IStageData;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Tuple;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-@Mod(modid = "itemstages", name = "Item Stages", version = "@VERSION@", dependencies = "after:jei@[4.14.4.267,);required-after:bookshelf;required-after:gamestages@[2.0.114,);required-after:crafttweaker", certificateFingerprint = "@FINGERPRINT@")
+@Mod("itemstages")
 public class ItemStages {
     
-    public static final LoggingHelper LOG = new LoggingHelper("Item Stages");
+    public static final Logger LOGGER = LogManager.getLogger("Item Stages");
     
-    public static final ItemStackMap<String> ITEM_STAGES = new ItemStackMap<>(StageCompare.INSTANCE);
-    public static final ItemStackMap<String> CUSTOM_NAMES = new ItemStackMap<>(StageCompare.INSTANCE);
-    
-    public static final ListMultimap<String, ItemStack> SORTED_STAGES = ArrayListMultimap.create();
-    public static final SetMultimap<Item, Tuple<ItemStack, String>> SORTED_ITEM_STAGES = Multimaps.newSetMultimap(Maps.newIdentityHashMap(), Sets::newIdentityHashSet);
-    public static final ListMultimap<String, FluidStack> FLUID_STAGES = ArrayListMultimap.create();
-    public static final Map<EnchantmentData, String> ENCHANT_STAGES = new HashMap<>();
-    public static final ListMultimap<String, String> tooltipStages = ArrayListMultimap.create();
-    public static final ListMultimap<String, String> recipeCategoryStages = ArrayListMultimap.create();
-    
-    public static String getStage (ItemStack stack) {
+    public ItemStages() {
         
-        if (!stack.isEmpty()) {
+        MinecraftForge.EVENT_BUS.addListener(this::onPlayerTick);
+        MinecraftForge.EVENT_BUS.addListener(this::onItemTooltip);
+        MinecraftForge.EVENT_BUS.addListener(this::onItemPickup);
+        MinecraftForge.EVENT_BUS.addListener(this::onItemUsed);
+        MinecraftForge.EVENT_BUS.addListener(this::onEntityHurt);
+        
+        MinecraftForge.EVENT_BUS.addListener(this::addReloadListeners);
+    }
+    
+    private void addReloadListeners (AddReloadListenerEvent event) {
+        
+        event.addListener(RestrictionManager.INSTANCE);
+    }
+    
+    private void onEntityHurt (LivingAttackEvent event) {
+        
+        if (this.canAffectPlayer(event.getSource())) {
             
-            for (final Tuple<ItemStack, String> entry : SORTED_ITEM_STAGES.get(stack.getItem())) {
+            final PlayerEntity player = (PlayerEntity) event.getSource().getTrueSource();
+            final ItemStack stack = player.getHeldItemMainhand();
+            final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(player, stack);
+            
+            if (restriction != null && restriction.shouldPreventAttacking()) {
                 
-                if (StageCompare.INSTANCE.isValid(stack, entry.getFirst())) {
-                    
-                    return entry.getSecond();
-                }
+                event.setCanceled(true);
+                
+                final ITextComponent message = restriction.getAttackMessage(stack);
+                player.sendMessage(message, Util.DUMMY_UUID);
             }
         }
-        
-        return null;
     }
-
-    public static String getEnchantStage (ItemStack stack) {
-
-        if (!stack.isEmpty()) {
-
-            Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack);
-
-            for (final Entry<Enchantment, Integer> enchant : map.entrySet()) {
-
-                for (final Entry<EnchantmentData, String> enchantStage : ENCHANT_STAGES.entrySet()) {
-
-                    if (enchantStage.getKey().enchantment == enchant.getKey() && enchantStage.getKey().enchantmentLevel == enchant.getValue()) {
-
-                        return enchantStage.getValue();
+    
+    private void onItemUsed (PlayerInteractEvent event) {
+        
+        if (event.isCancelable() && this.canAffectPlayer(event.getPlayer())) {
+            
+            final ItemStack stack = event.getItemStack();
+            final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(event.getPlayer(), stack);
+            
+            if (restriction != null && restriction.shouldPreventUsing()) {
+                
+                event.setCanceled(true);
+                
+                final ITextComponent message = restriction.getUsageMessage(stack);
+                event.getPlayer().sendMessage(message, Util.DUMMY_UUID);
+            }
+        }
+    }
+    
+    private void onItemPickup (EntityItemPickupEvent event) {
+        
+        if (this.canAffectPlayer(event.getPlayer())) {
+            
+            final ItemStack stack = event.getItem().getItem();
+            final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(event.getPlayer(), stack);
+            
+            if (restriction != null && restriction.shouldPreventPickup()) {
+                
+                event.setCanceled(true);
+                event.getItem().setPickupDelay(restriction.getPickupDelay());
+                // TODO consider extending life span by default delay.
+                
+                final ITextComponent message = restriction.getPickupMessage(stack);
+                event.getPlayer().sendMessage(message, Util.DUMMY_UUID);
+            }
+        }
+    }
+    
+    private void onPlayerTick (TickEvent.PlayerTickEvent event) {
+        
+        if (event.phase == Phase.START && event.player != null && !event.player.world.isRemote && !(event.player instanceof FakePlayer)) {
+            
+            final PlayerEntity player = event.player;
+            final IStageData stageData = GameStageHelper.getPlayerData(player);
+            final PlayerInventory inv = player.inventory;
+            
+            for (int slot = 0; slot < inv.getSizeInventory(); slot++) {
+                
+                final ItemStack slotContent = inv.getStackInSlot(slot);
+                final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(player, stageData, slotContent);
+                
+                if (restriction != null && restriction.shouldPreventInventory()) {
+                    
+                    inv.setInventorySlotContents(slot, ItemStack.EMPTY);
+                    player.dropItem(slotContent, false);
+                    
+                    final ITextComponent message = restriction.getDropMessage(slotContent);
+                    
+                    if (message != null) {
+                        
+                        player.sendMessage(message, Util.DUMMY_UUID);
                     }
                 }
             }
         }
-
-        return null;
     }
     
-    private static String getUnfamiliarName (ItemStack stack) {
+    private void onItemTooltip (ItemTooltipEvent event) {
         
-        return CUSTOM_NAMES.containsKey(stack) ? CUSTOM_NAMES.get(stack) : "Unfamiliar Item";
-    }
-    
-    private static void sendDropMessage (EntityPlayer player, ItemStack stack) {
-        
-        player.sendStatusMessage(new TextComponentTranslation(TRANSLATE_DROP, getUnfamiliarName(stack)), false);
-    }
-
-    private static void sendAttackFailMessage (EntityPlayer player, ItemStack stack) {
-
-        player.sendStatusMessage(new TextComponentTranslation(TRANSLATE_ATTACK, stack.getDisplayName()), false);
-    }
-    
-    @Mod.EventHandler
-    public void preInit (FMLPreInitializationEvent event) {
-        
-        new ConfigurationHandler(event.getSuggestedConfigurationFile());
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-    
-    @SubscribeEvent
-    public void onPlayerDig (BreakSpeed event) {
-        
-        if (!ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
+        if (event.getPlayer() != null) {
             
-            ItemStack heldItem = event.getEntityPlayer().getHeldItemMainhand();
-
-            final String stage = getStage(heldItem);
-
-            final String enchantStage = getEnchantStage(heldItem);
+            final PlayerEntity player = event.getPlayer();
+            final IStageData data = GameStageSaveHandler.getClientData();
+            final ItemStack stack = event.getItemStack();
             
-            if ((stage != null && !GameStageHelper.hasStage(event.getEntityPlayer(), stage)) ||
-                    (enchantStage != null && !GameStageHelper.hasStage(event.getEntityPlayer(), enchantStage))) {
-                
-                event.setNewSpeed(-1f);
-                event.setCanceled(true);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onPlayerAttack (AttackEntityEvent event) {
-        
-        if (!ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
+            final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(player, data, stack);
             
-            final String stage = getEnchantStage(event.getEntityPlayer().getHeldItemMainhand());
-            
-            if ((stage != null && !GameStageHelper.hasStage(event.getEntityPlayer(), stage))) {
-                
-                if (event.getEntityPlayer().world.getTotalWorldTime() % 2 == 0) {
-                    
-                    sendAttackFailMessage(event.getEntityPlayer(), event.getEntityPlayer().getHeldItemMainhand());
-                }
-                event.setCanceled(true);
-            }
-        }
-    }
-    
-    @SubscribeEvent
-    public void onPlayerInteract (PlayerInteractEvent event) {
-        
-        if (event.isCancelable() && !ConfigurationHandler.allowInteractRestricted && !event.getEntityPlayer().isCreative()) {
-            
-            final String stage = getStage(event.getItemStack());
-            
-            if (stage != null && !GameStageHelper.hasStage(event.getEntityPlayer(), stage)) {
-                
-                event.setCanceled(true);
-            }
-        }
-    }
-    
-    @SubscribeEvent
-    public void onLivingUpdate (LivingUpdateEvent event) {
-        
-        if (event.getEntity() instanceof EntityPlayer && !event.getEntityLiving().world.isRemote) {
-            
-            final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-            
-            // Exit early if creative mode.
-            if (player.isCreative()) {
-                
-                return;
-            }
-            
-            for (final EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
-                
-                // Skips the item if the slot type was configured to be ignored.
-                if (ConfigurationHandler.allowHoldingRestricted && slot.getSlotType() == Type.HAND || ConfigurationHandler.allowEquipRestricted && slot.getSlotType() == Type.ARMOR) {
-                    
-                    continue;
-                }
-                
-                final ItemStack stack = player.getItemStackFromSlot(slot);
-                final String stage = getStage(stack);
-                
-                String enchantStage = null;
-                
-                if (!ConfigurationHandler.allowHoldingRestrictedEnchant || !(slot.getSlotType() == Type.HAND)) {
-                    
-                    enchantStage = getEnchantStage(stack);
-                }
-                
-                if ((stage != null && !GameStageHelper.hasStage(player, stage)) ||
-                        (enchantStage != null && !GameStageHelper.hasStage(player, enchantStage))) {
-                    
-                    player.setItemStackToSlot(slot, ItemStack.EMPTY);
-                    player.dropItem(stack, false);
-                    sendDropMessage(player, stack);
-                }
-            }
-        }
-    }
-    
-    private static final String TRANSLATE_DESCRIPTION = "tooltip.itemstages.description";
-    private static final String TRANSLATE_ENCHANT_DESCRIPTION = "tooltip.itemstages.enchant";
-    private static final String TRANSLATE_INFO = "tooltip.itemstages.info";
-    private static final String TRANSLATE_STAGE = "tooltip.itemstages.stage";
-    private static final String TRANSLATE_DROP = "message.itemstages.drop";
-    private static final String TRANSLATE_ATTACK = "message.itemstages.attack";
-    
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onTooltip (ItemTooltipEvent event) {
-        
-        final EntityPlayerSP player = PlayerUtils.getClientPlayerSP();
-        
-        if (player != null) {
-            
-            final String itemsStage = getStage(event.getItemStack());
-            final String enchantStage = getEnchantStage(event.getItemStack());
-            
-            // Add message to items when the player doesn't have access to it.
-            if (itemsStage != null && !GameStageHelper.hasStage(player, itemsStage) && ConfigurationHandler.changeRestrictionTooltip) {
+            if (restriction != null) {
                 
                 event.getToolTip().clear();
-                event.getToolTip().add(TextFormatting.WHITE + getUnfamiliarName(event.getItemStack()));
-                event.getToolTip().add(" ");
-                event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format(TRANSLATE_DESCRIPTION));
-                event.getToolTip().add(TextFormatting.RED + I18n.format(TRANSLATE_INFO, itemsStage));
-            }
-
-            if (enchantStage != null && !GameStageHelper.hasStage(player,enchantStage) && ConfigurationHandler.changeRestrictionTooltip) {
+                final ITextComponent hiddenName = restriction.getHiddenName(stack);
                 
-                event.getToolTip().add(" ");
-                event.getToolTip().add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format(TRANSLATE_ENCHANT_DESCRIPTION));
-                event.getToolTip().add(TextFormatting.RED + I18n.format(TRANSLATE_INFO, enchantStage));
-            }
-            
-            // Adds info about which stage the item is added to. This is more of a debug thing.
-            else if (itemsStage != null && (event.getEntityPlayer() != null && event.getEntityPlayer().isCreative() || event.getFlags() == ITooltipFlag.TooltipFlags.ADVANCED)) {
-                
-                event.getToolTip().add(TextFormatting.BLUE + I18n.format(TRANSLATE_STAGE) + " " + TextFormatting.WHITE + itemsStage);
-            }
-            
-            // Removes tooltip info that has been restricted.
-            for (final String tipStage : tooltipStages.keySet()) {
-                
-                if (!GameStageHelper.hasStage(player, tipStage)) {
+                if (hiddenName != null) {
                     
-                    for (final Iterator<String> iterator = event.getToolTip().iterator(); iterator.hasNext();) {
+                    event.getToolTip().add(hiddenName);
+                }
+                
+                // Debug tooltip shows which stages the player doesn't have.
+                if (event.getFlags().isAdvanced()) {
+                    
+                    final List<ITextComponent> stages = new ArrayList<>();
+                    
+                    final ITextComponent sep = new StringTextComponent(", ").mergeStyle(TextFormatting.GRAY);
+                    
+                    for (final String stage : restriction.getStages()) {
                         
-                        final String tooltipLine = iterator.next();
+                        stages.add(new StringTextComponent(stage).mergeStyle(data.hasStage(stage) ? TextFormatting.GREEN : TextFormatting.RED));
+                    }
+                    
+                    final ITextComponent desc = new TranslationTextComponent("tooltip.itemstages.item.description", TextUtils.join(sep, stages)).mergeStyle(TextFormatting.GRAY);
+                    event.getToolTip().add(desc);
+                    
+                    if (restriction.shouldPreventInventory()) {
                         
-                        for (final String restricted : tooltipStages.get(tipStage)) {
-                            
-                            if (tooltipLine.startsWith(restricted)) {
-                                
-                                iterator.remove();
-                            }
-                        }
+                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.drop").mergeStyle(TextFormatting.RED));
+                    }
+                    
+                    if (restriction.shouldPreventPickup()) {
+                        
+                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.pickup").mergeStyle(TextFormatting.RED));
+                    }
+                    
+                    if (restriction.shouldPreventUsing()) {
+                        
+                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.use").mergeStyle(TextFormatting.RED));
+                    }
+                    
+                    if (restriction.shouldPreventAttacking()) {
+                        
+                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.attack").mergeStyle(TextFormatting.RED));
+                    }
+                    
+                    if (restriction.shouldHideInJEI()) {
+                        
+                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.jei").mergeStyle(TextFormatting.RED));
                     }
                 }
             }
         }
     }
     
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public void onClientSync (StagesSyncedEvent event) {
+    private final boolean canAffectPlayer (DamageSource source) {
         
-        if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
-            
-            PluginItemStages.syncHiddenItems(event.getEntityPlayer());
-        }
+        return source != null && source.getTrueSource() instanceof PlayerEntity && this.canAffectPlayer((PlayerEntity) source.getTrueSource());
     }
     
-    @EventHandler
-    public void onLoadComplete (FMLLoadCompleteEvent event) {
+    private final boolean canAffectPlayer (PlayerEntity player) {
         
-        LOG.info("Sorting {} staged items.", ITEM_STAGES.size());
-        final long time = System.currentTimeMillis();
-        
-        for (final Entry<ItemStack, String> entry : ITEM_STAGES.entrySet()) {
-            
-            SORTED_STAGES.put(entry.getValue(), entry.getKey());
-            SORTED_ITEM_STAGES.put(entry.getKey().getItem(), new Tuple<>(entry.getKey(), entry.getValue()));
-        }
-        
-        LOG.info("Sorting complete. Found {} stages. Took {}ms", SORTED_STAGES.keySet().size(), System.currentTimeMillis() - time);
-    }
-    
-    @EventHandler
-    @SideOnly(Side.CLIENT)
-    public void onClientLoadComplete (FMLLoadCompleteEvent event) {
-        
-        // Add a resource reload listener to keep up to sync with JEI.
-        ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(listener -> {
-            
-            if (Loader.isModLoaded("jei") && GameUtils.isClient()) {
-                
-                LOG.info("Resyncing JEI info.");
-                PluginItemStages.syncHiddenItems(PlayerUtils.getClientPlayerSP());
-            }
-        });
+        return player != null && !player.world.isRemote && !(player instanceof FakePlayer);
     }
 }
