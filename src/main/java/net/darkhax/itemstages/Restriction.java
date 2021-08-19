@@ -21,20 +21,20 @@ public class Restriction {
     private final Collection<Predicate<ItemStack>> restricted = new ArrayList<>();
     private final Set<String> stages = new HashSet<>();
     
-    private Function<ItemStack, ITextComponent> hiddenName = stack -> new TranslationTextComponent("tooltip.itemstages.hidden_name", stack.getDisplayName()).mergeStyle(TextFormatting.RED);
+    private Function<ItemStack, ITextComponent> hiddenName = stack -> new TranslationTextComponent("tooltip.itemstages.hidden_name", stack.getHoverName()).withStyle(TextFormatting.RED);
     
     private boolean preventInventory = true;
-    private Function<ItemStack, ITextComponent> dropMessage = stack -> new TranslationTextComponent("message.itemstages.drop", stack.getDisplayName()).mergeStyle(TextFormatting.RED);
+    private Function<ItemStack, ITextComponent> dropMessage = stack -> new TranslationTextComponent("message.itemstages.drop", stack.getHoverName()).withStyle(TextFormatting.RED);
     
     private boolean preventAttacking = true;
-    private Function<ItemStack, ITextComponent> attackMessage = stack -> new TranslationTextComponent("message.itemstages.attack", stack.getDisplayName()).mergeStyle(TextFormatting.RED);
+    private Function<ItemStack, ITextComponent> attackMessage = stack -> new TranslationTextComponent("message.itemstages.attack", stack.getHoverName()).withStyle(TextFormatting.RED);
     
     private boolean preventPickup = true;
     private int pickupDelay = 60;
-    private Function<ItemStack, ITextComponent> pickupMessage = stack -> new TranslationTextComponent("message.itemstages.pickup", stack.getDisplayName()).mergeStyle(TextFormatting.RED);
+    private Function<ItemStack, ITextComponent> pickupMessage = stack -> new TranslationTextComponent("message.itemstages.pickup", stack.getHoverName()).withStyle(TextFormatting.RED);
     
     private boolean preventUsing = true;
-    private Function<ItemStack, ITextComponent> usageMessage = stack -> new TranslationTextComponent("message.itemstages.use", stack.getDisplayName()).mergeStyle(TextFormatting.RED);
+    private Function<ItemStack, ITextComponent> usageMessage = stack -> new TranslationTextComponent("message.itemstages.use", stack.getHoverName()).withStyle(TextFormatting.RED);
     
     private boolean hideInJEI = true;
     

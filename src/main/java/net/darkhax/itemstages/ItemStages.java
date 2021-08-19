@@ -55,8 +55,8 @@ public class ItemStages {
         
         if (this.canAffectPlayer(event.getSource())) {
             
-            final PlayerEntity player = (PlayerEntity) event.getSource().getTrueSource();
-            final ItemStack stack = player.getHeldItemMainhand();
+            final PlayerEntity player = (PlayerEntity) event.getSource().getEntity();
+            final ItemStack stack = player.getMainHandItem();
             final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(player, stack);
             
             if (restriction != null && restriction.shouldPreventAttacking()) {
@@ -64,7 +64,7 @@ public class ItemStages {
                 event.setCanceled(true);
                 
                 final ITextComponent message = restriction.getAttackMessage(stack);
-                player.sendMessage(message, Util.DUMMY_UUID);
+                player.sendMessage(message, Util.NIL_UUID);
             }
         }
     }
@@ -81,7 +81,7 @@ public class ItemStages {
                 event.setCanceled(true);
                 
                 final ITextComponent message = restriction.getUsageMessage(stack);
-                event.getPlayer().sendMessage(message, Util.DUMMY_UUID);
+                event.getPlayer().sendMessage(message, Util.NIL_UUID);
             }
         }
     }
@@ -96,38 +96,38 @@ public class ItemStages {
             if (restriction != null && restriction.shouldPreventPickup()) {
                 
                 event.setCanceled(true);
-                event.getItem().setPickupDelay(restriction.getPickupDelay());
+                event.getItem().setPickUpDelay(restriction.getPickupDelay());
                 // TODO consider extending life span by default delay.
                 
                 final ITextComponent message = restriction.getPickupMessage(stack);
-                event.getPlayer().sendMessage(message, Util.DUMMY_UUID);
+                event.getPlayer().sendMessage(message, Util.NIL_UUID);
             }
         }
     }
     
     private void onPlayerTick (TickEvent.PlayerTickEvent event) {
         
-        if (event.phase == Phase.START && event.player != null && !event.player.world.isRemote && !(event.player instanceof FakePlayer)) {
+        if (event.phase == Phase.START && event.player != null && !event.player.level.isClientSide && !(event.player instanceof FakePlayer)) {
             
             final PlayerEntity player = event.player;
             final IStageData stageData = GameStageHelper.getPlayerData(player);
             final PlayerInventory inv = player.inventory;
             
-            for (int slot = 0; slot < inv.getSizeInventory(); slot++) {
+            for (int slot = 0; slot < inv.getContainerSize(); slot++) {
                 
-                final ItemStack slotContent = inv.getStackInSlot(slot);
+                final ItemStack slotContent = inv.getItem(slot);
                 final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(player, stageData, slotContent);
                 
                 if (restriction != null && restriction.shouldPreventInventory()) {
                     
-                    inv.setInventorySlotContents(slot, ItemStack.EMPTY);
-                    player.dropItem(slotContent, false);
+                    inv.setItem(slot, ItemStack.EMPTY);
+                    player.drop(slotContent, false);
                     
                     final ITextComponent message = restriction.getDropMessage(slotContent);
                     
                     if (message != null) {
                         
-                        player.sendMessage(message, Util.DUMMY_UUID);
+                        player.sendMessage(message, Util.NIL_UUID);
                     }
                 }
             }
@@ -159,39 +159,39 @@ public class ItemStages {
                     
                     final List<ITextComponent> stages = new ArrayList<>();
                     
-                    final ITextComponent sep = new StringTextComponent(", ").mergeStyle(TextFormatting.GRAY);
+                    final ITextComponent sep = new StringTextComponent(", ").withStyle(TextFormatting.GRAY);
                     
                     for (final String stage : restriction.getStages()) {
                         
-                        stages.add(new StringTextComponent(stage).mergeStyle(data.hasStage(stage) ? TextFormatting.GREEN : TextFormatting.RED));
+                        stages.add(new StringTextComponent(stage).withStyle(data.hasStage(stage) ? TextFormatting.GREEN : TextFormatting.RED));
                     }
                     
-                    final ITextComponent desc = new TranslationTextComponent("tooltip.itemstages.item.description", TextUtils.join(sep, stages)).mergeStyle(TextFormatting.GRAY);
+                    final ITextComponent desc = new TranslationTextComponent("tooltip.itemstages.item.description", TextUtils.join(sep, stages)).withStyle(TextFormatting.GRAY);
                     event.getToolTip().add(desc);
                     
                     if (restriction.shouldPreventInventory()) {
                         
-                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.drop").mergeStyle(TextFormatting.RED));
+                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.drop").withStyle(TextFormatting.RED));
                     }
                     
                     if (restriction.shouldPreventPickup()) {
                         
-                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.pickup").mergeStyle(TextFormatting.RED));
+                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.pickup").withStyle(TextFormatting.RED));
                     }
                     
                     if (restriction.shouldPreventUsing()) {
                         
-                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.use").mergeStyle(TextFormatting.RED));
+                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.use").withStyle(TextFormatting.RED));
                     }
                     
                     if (restriction.shouldPreventAttacking()) {
                         
-                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.attack").mergeStyle(TextFormatting.RED));
+                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.attack").withStyle(TextFormatting.RED));
                     }
                     
                     if (restriction.shouldHideInJEI()) {
                         
-                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.jei").mergeStyle(TextFormatting.RED));
+                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.jei").withStyle(TextFormatting.RED));
                     }
                 }
             }
@@ -200,11 +200,11 @@ public class ItemStages {
     
     private final boolean canAffectPlayer (DamageSource source) {
         
-        return source != null && source.getTrueSource() instanceof PlayerEntity && this.canAffectPlayer((PlayerEntity) source.getTrueSource());
+        return source != null && source.getEntity() instanceof PlayerEntity && this.canAffectPlayer((PlayerEntity) source.getEntity());
     }
     
     private final boolean canAffectPlayer (PlayerEntity player) {
         
-        return player != null && !player.world.isRemote && !(player instanceof FakePlayer);
+        return player != null && !player.level.isClientSide && !(player instanceof FakePlayer);
     }
 }

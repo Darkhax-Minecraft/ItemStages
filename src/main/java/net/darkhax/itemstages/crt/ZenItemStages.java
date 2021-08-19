@@ -101,7 +101,7 @@ public class ZenItemStages {
                 return true;
             }
             
-            if (checkItem && EnchantmentHelper.getEnchantmentLevel(enchantment, stack) > 0) {
+            if (checkItem && EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack) > 0) {
                 
                 return true;
             }
