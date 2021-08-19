@@ -1,62 +1,51 @@
-# Item Stages [![](http://cf.way2muchnoise.eu/280316.svg)](https://minecraft.curseforge.com/projects/item-stages) [![](http://cf.way2muchnoise.eu/versions/280316.svg)](https://minecraft.curseforge.com/projects/item-stages)
+# Game Stages
 
-This mod is an addon for the [GameStages API](https://minecraft.curseforge.com/projects/game-stages). It allows for items and blocks to be placed into custom progression systems.  You should check out the GameStage API mod's description for more info. To give a brief run down, stages are parts of the progression system set up by the modpack or server. Stages are given to players through a command, which is typically ran by a questing mod, advancement, or even a Command Block.
+Game Stages provides a framework for creating modpack progression systems in Minecraft. These progression systems are built using stages which are named true/false flags which are stored on a per-player basis. Stages are not linear and have no implicit connection or dependency on each other.
 
-[![Nodecraft](https://nodecraft.com/assets/images/logo-dark.png)](https://nodecraft.com/r/darkhax)    
+Game stages only provides the framework for handling stage data. It saves the data, it synchronizes it with clients, and it provides commands that can be used to interact with the data. It does **not** alter game mechanics or interpret what stage flags are meant to do. This functionality is provided through Game Stage addon mods.
+
+## Addons
+
+Other mods can hook into Game Stages and use a player's stage data to change how certain mechanics work. These addons and their mechanics provide the tools that modpack authors use to build their progression systems.
+
+## FaQ
+
+**How do I give players a stage?**    
+This mod provides the `/gamestage add @p stagename` command which will give a player a stage. These commands can be used in command blocks, functions, advancements, signs, books, etc. Many mods will also allow you to run a command when a player does something. Keep in mind the `@p` is substituted to be the current player.
+
+**How do I stage a recipe/block/item?**    
+Game Stages does not provide the actual progression mechanics. You will need to use addons such as ItemStages to do these things.
+
+## Maven Dependency
+If you are using [Gradle](https://gradle.org) to manage your dependencies, add the following into your `build.gradle` file. Make sure to replace the version with the correct one. All versions can be viewed [here](https://maven.blamejared.com/net/darkhax/gamestages/).
+```
+repositories {
+
+    maven {
+    
+        url 'https://maven.blamejared.com'
+    }
+}
+
+dependencies {
+
+    // compile fg.deobf("net.darkhax.gamestages:GameStages-1.16.5:7.1.2")
+    compile fg.deobf("net.darkhax.gamestages:GameStages-MCVERSION:PUT_FILE_VERSION_HERE")
+}
+```
+
+## Jar Signing
+
+As of January 11th 2021 officially published builds will be signed. You can validate the integrity of these builds by comparing their signatures with the public fingerprints.
+
+| Hash   | Fingerprint                                                        |
+|--------|--------------------------------------------------------------------|
+| MD5    | `12F89108EF8DCC223D6723275E87208F`                                 |
+| SHA1   | `46D93AD2DC8ADED38A606D3C36A80CB33EFA69D1`                         |
+| SHA256 | `EBC4B1678BF90CDBDC4F01B18E6164394C10850BA6C4C748F0FA95F2CB083AE5` |
+
+
+## Sponsors
+<img src="https://nodecraft.com/assets/images/logo-dark.png" width="384" height="90">
+
 This project is sponsored by Nodecraft. Use code [Darkhax](https://nodecraft.com/r/darkhax) for 30% off your first month of service!
-
-## Setup
-
-This mod uses [CraftTweaker](https://minecraft.curseforge.com/projects/crafttweaker) for configuration.
-
-This mod adds one new ZenScript method for adding item stage restrictions. You can use a specific item/block id, or an ore dictionary entry. If an ore dictionary is used, all entries for that oredict will be restricted. `mods.ItemStages.addItemStage(String stage, Item/Block/OreDict);`
-
-## Effects
-
-When something is restricted by this mod, several things will happen to prevent the player from using the item. 
-
-- Holding a restricted item will cause it to be dropped immediately.
-- The tooltip will be replaced with a restricted message.
-- Items will be hidden in JEI if JEI is installed. 
-- More to come!
-
-## Example Script
-
-```
-// Example Script
-
-// Restricts access to stone.
-mods.ItemStages.addItemStage("one", <minecraft:stone>);
-
-// Restricts access to iron chestplate..
-// Note: With JEI auto hiding, you will need to manually add another entry for the version of the item in JEI.
-mods.ItemStages.addItemStage("one", <minecraft:iron_chestplate>);
-
-// Restricts access to all level 5 enchantments.
-// Note: With JEI auto hiding, you will need to manually add another entry for the version of the item in JEI.
-mods.ItemStages.addItemStage("one", <minecraft:enchanted_book>.withTag({StoredEnchantments: [{lvl: 5 as short}]}));
-
-// Restricts access to Potion of Harming II
-mods.ItemStages.addItemStage("one", <minecraft:potion>.withTag({Potion: "minecraft:strong_harming"}));
-
-// Restricts access to all dyes in the ore dictionary.
-mods.ItemStages.addItemStage("one", <ore:dye>);
-
-// Gives an item a different name if it is restricted
-mods.ItemStages.setUnfamiliarName("Clump of Fur", <minecraft:wool:*>);
-
-// Stages a liquid from JEI
-mods.ItemStages.stageLiquid("one", <liquid:water>);
-
-// Stages a tooltip line. All lines that start with target text.
-mods.ItemStages.stageTooltip("one", "When");
-
-// Stages a recipe category in JEI.
-mods.ItemStages.stageRecipeCategory("eight", "minecraft.anvil");
-
-// Stages an enchantment (removes the enchanted book from JEI and stops the enchantment being used)
-mods.ItemStages.stageEnchant("one", <enchantment:minecraft:protection>);
-
-// Stages an enchantment by level (removes the enchanted book from JEI and stops the enchantment being used)
-mods.ItemStages.stageEnchantByLevel("one", <enchantment:minecraft:projectile_protection>.makeEnchantment(1));
-```

@@ -1,25 +1,18 @@
-*.class
+# Gradle
+.gradle/
+bin/
+build/
 
-# Package Files #
-*.war
-*.ear
-/build
-/eclipse
-/bin
-/out
-
+#Eclipse
 *.classpath
 *.project
-/.gradle
-/.settings
-/.idea
-*.iml
-*.ipr
-*.iws
-/.metadata/*
-*.eml
-/run/
-usernamecache.json
-*.stackdump
-*.log
+*.prefs
 *.launch
+
+# General
+run/
+
+# Annotation Processing
+/.apt_generated_tests/
+/Users/
+.factorypath
