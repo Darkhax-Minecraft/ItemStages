@@ -38,8 +38,8 @@ public class PluginItemStages implements IModPlugin {
     
     public PluginItemStages() {
         
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, StagesSyncedEvent.class, e -> updateHiddenItems());
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, RecipesUpdatedEvent.class, e -> updateHiddenItems());
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, StagesSyncedEvent.class, e -> this.updateHiddenItems());
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, RecipesUpdatedEvent.class, e -> this.updateHiddenItems());
     }
     
     @Override

@@ -27,7 +27,7 @@ public class ZenRestriction {
     }
     
     @ZenCodeType.Method
-    public static Restriction defaults(Restriction self, boolean defaultValue) {
+    public static Restriction defaults (Restriction self, boolean defaultValue) {
         
         return self.setPreventInventory(defaultValue).setPreventPickup(defaultValue).setPreventAttacking(defaultValue).setPreventUsing(defaultValue).setHideInJEI(defaultValue);
     }
