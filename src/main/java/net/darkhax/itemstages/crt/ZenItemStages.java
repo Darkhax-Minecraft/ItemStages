@@ -1,12 +1,9 @@
 package net.darkhax.itemstages.crt;
 
-import java.util.Arrays;
-import java.util.Map;
 import java.util.function.Predicate;
 
 import org.openzen.zencode.java.ZenCodeType;
 
-import com.blamejared.crafttweaker.api.CraftTweakerAPI;
 import com.blamejared.crafttweaker.api.annotations.ZenRegister;
 import com.blamejared.crafttweaker.api.item.IIngredient;
 import com.blamejared.crafttweaker.api.item.IItemStack;
@@ -14,17 +11,12 @@ import com.blamejared.crafttweaker.api.zencode.impl.util.PositionUtil;
 import com.blamejared.crafttweaker.impl.item.MCItemStack;
 
 import net.darkhax.itemstages.Restriction;
-import net.darkhax.itemstages.RestrictionManager;
+import net.darkhax.itemstages.crt.actions.ActionCreateRestriction;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.ToolType;
 
 @ZenRegister
@@ -86,13 +78,12 @@ public class ZenItemStages {
             throw new IllegalStateException("[ItemStages] A restriction was created with no stages specified. This is not supported! " + PositionUtil.getZCScriptPositionFromStackTrace());
         }
         
-        CraftTweakerAPI.logger.info("[ItemStages] Creating new restriction for stages " + Arrays.toString(requiredStages) + ".");
         final Restriction restriction = new Restriction(requiredStages);
-        RestrictionManager.INSTANCE.addRestriction(restriction);
+        ActionCreateRestriction.apply(restriction);
         return restriction;
     }
     
-    private static boolean hasEnchantment(ItemStack stack, Enchantment enchantment, boolean checkBook, boolean checkItem) {
+    private static boolean hasEnchantment (ItemStack stack, Enchantment enchantment, boolean checkBook, boolean checkItem) {
         
         if (stack.hasTag()) {
             
