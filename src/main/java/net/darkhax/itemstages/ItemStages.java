@@ -29,6 +29,7 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 @Mod("itemstages")
 public class ItemStages {
@@ -38,12 +39,16 @@ public class ItemStages {
     public ItemStages() {
         
         MinecraftForge.EVENT_BUS.addListener(this::onPlayerTick);
-        MinecraftForge.EVENT_BUS.addListener(this::onItemTooltip);
         MinecraftForge.EVENT_BUS.addListener(this::onItemPickup);
         MinecraftForge.EVENT_BUS.addListener(this::onItemUsed);
         MinecraftForge.EVENT_BUS.addListener(this::onEntityHurt);
         
         MinecraftForge.EVENT_BUS.addListener(this::addReloadListeners);
+        
+        if (FMLEnvironment.dist.isClient()) {
+            
+            MinecraftForge.EVENT_BUS.addListener(this::onItemTooltip);
+        }
     }
     
     private void addReloadListeners (AddReloadListenerEvent event) {
