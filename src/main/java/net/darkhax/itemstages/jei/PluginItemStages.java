@@ -3,6 +3,8 @@ package net.darkhax.itemstages.jei;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openzen.zenscript.codemodel.expression.ThisExpression;
+
 import com.ibm.icu.text.DecimalFormat;
 
 import mezz.jei.api.IModPlugin;
@@ -25,6 +27,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 @JeiPlugin
 @OnlyIn(Dist.CLIENT)
@@ -38,8 +41,11 @@ public class PluginItemStages implements IModPlugin {
     
     public PluginItemStages() {
         
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, StagesSyncedEvent.class, e -> this.updateHiddenItems());
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, RecipesUpdatedEvent.class, e -> this.updateHiddenItems());
+        if (EffectiveSide.get().isClient()) {
+            
+            MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, StagesSyncedEvent.class, e -> this.updateHiddenItems());
+            MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, RecipesUpdatedEvent.class, e -> this.updateHiddenItems());
+        }
     }
     
     @Override
@@ -83,24 +89,27 @@ public class PluginItemStages implements IModPlugin {
     
     private void collectStagedIngredients () {
         
-        // Calculate the list of items to hide from JEI.
-        ItemStages.LOGGER.debug("Calculating items to hide.");
-        final long hideCalcStart = System.nanoTime();
-        final RestrictionManager restrictions = RestrictionManager.INSTANCE;
-        final PlayerEntity player = PlayerUtils.getClientPlayer();
-        final IStageData stageData = GameStageHelper.getPlayerData(player);
-        
-        for (final ItemStack ingredient : this.ingredients.getAllIngredients(VanillaTypes.ITEM)) {
+        if (this.ingredients != null) {
             
-            final Restriction restriction = restrictions.getRestriction(player, stageData, ingredient);
+            // Calculate the list of items to hide from JEI.
+            ItemStages.LOGGER.debug("Calculating items to hide.");
+            final long hideCalcStart = System.nanoTime();
+            final RestrictionManager restrictions = RestrictionManager.INSTANCE;
+            final PlayerEntity player = PlayerUtils.getClientPlayer();
+            final IStageData stageData = GameStageHelper.getPlayerData(player);
             
-            if (restriction != null && restriction.shouldHideInJEI()) {
+            for (final ItemStack ingredient : this.ingredients.getAllIngredients(VanillaTypes.ITEM)) {
                 
-                this.hiddenItems.add(ingredient);
+                final Restriction restriction = restrictions.getRestriction(player, stageData, ingredient);
+                
+                if (restriction != null && restriction.shouldHideInJEI()) {
+                    
+                    this.hiddenItems.add(ingredient);
+                }
             }
+            
+            ItemStages.LOGGER.debug("Marked {} entries for hiding. Took {}ms.", this.hiddenItems.size(), FORMAT.format((System.nanoTime() - hideCalcStart) / 1000000));
         }
-        
-        ItemStages.LOGGER.debug("Marked {} entries for hiding. Took {}ms.", this.hiddenItems.size(), FORMAT.format((System.nanoTime() - hideCalcStart) / 1000000));
     }
     
     private void hideStagedIngredients () {
