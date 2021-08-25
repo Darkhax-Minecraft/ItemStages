@@ -35,15 +35,18 @@ public class RestrictionManager extends ReloadListener<Void> {
     @Nullable
     public Restriction getRestriction (PlayerEntity player, IStageData stageData, ItemStack stack) {
         
-        for (final String stageName : this.restrictions.keys()) {
+        if (!stack.isEmpty()) {
             
-            if (!GameStageHelper.hasStage(player, stageData, stageName)) {
+            for (final String stageName : this.restrictions.keys()) {
                 
-                for (final Restriction restriction : this.restrictions.get(stageName)) {
+                if (!GameStageHelper.hasStage(player, stageData, stageName)) {
                     
-                    if (restriction.isRestricted(stack) && !restriction.meetsRequirements(player, stageData)) {
+                    for (final Restriction restriction : this.restrictions.get(stageName)) {
                         
-                        return restriction;
+                        if (restriction.isRestricted(stack) && !restriction.meetsRequirements(player, stageData)) {
+                            
+                            return restriction;
+                        }
                     }
                 }
             }
