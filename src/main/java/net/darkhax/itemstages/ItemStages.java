@@ -124,7 +124,7 @@ public class ItemStages {
                 
                 if (!slotContent.isEmpty()) {
                     
-                    final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(player, stageData, slotContent);
+                    final Restriction restriction = RestrictionManager.INSTANCE.getInventoryRestriction(player, stageData, slotContent);
                     
                     if (restriction != null && restriction.shouldPreventInventory()) {
                         

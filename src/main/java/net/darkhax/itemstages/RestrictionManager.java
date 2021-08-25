@@ -26,22 +26,59 @@ public class RestrictionManager extends ReloadListener<Void> {
      */
     private final Multimap<String, Restriction> restrictions = HashMultimap.create();
     
+    private final Multimap<String, Restriction> preventInventory = HashMultimap.create();
+    
+    private boolean hasBuiltCaches = false;
+    
+    private void buildCaches () {
+        
+        if (!this.hasBuiltCaches) {
+            
+            for (final String stage : this.restrictions.keySet()) {
+                
+                for (final Restriction restriction : this.restrictions.get(stage)) {
+                    
+                    if (restriction.shouldPreventInventory()) {
+                        
+                        this.preventInventory.put(stage, restriction);
+                    }
+                }
+            }
+            
+            this.hasBuiltCaches = true;
+        }
+    }
+    
     @Nullable
     public Restriction getRestriction (PlayerEntity player, ItemStack stack) {
         
-        return this.getRestriction(player, GameStageHelper.getPlayerData(player), stack);
+        return this.getRestriction(player, GameStageHelper.getPlayerData(player), stack, this.restrictions);
     }
     
     @Nullable
     public Restriction getRestriction (PlayerEntity player, IStageData stageData, ItemStack stack) {
         
+        return this.getRestriction(player, stageData, stack, this.restrictions);
+    }
+    
+    @Nullable
+    public Restriction getInventoryRestriction (PlayerEntity player, IStageData stageData, ItemStack stack) {
+        
+        return this.getRestriction(player, stageData, stack, this.preventInventory);
+    }
+    
+    @Nullable
+    public Restriction getRestriction (PlayerEntity player, IStageData stageData, ItemStack stack, Multimap<String, Restriction> restrictionPool) {
+        
         if (!stack.isEmpty()) {
             
-            for (final String stageName : this.restrictions.keys()) {
+            this.buildCaches();
+            
+            for (final String stageName : restrictionPool.keys()) {
                 
                 if (!GameStageHelper.hasStage(player, stageData, stageName)) {
                     
-                    for (final Restriction restriction : this.restrictions.get(stageName)) {
+                    for (final Restriction restriction : restrictionPool.get(stageName)) {
                         
                         if (restriction.isRestricted(stack) && !restriction.meetsRequirements(player, stageData)) {
                             
@@ -76,6 +113,8 @@ public class RestrictionManager extends ReloadListener<Void> {
     @Override
     protected void apply (Void object, IResourceManager resourceManager, IProfiler profiler) {
         
+        this.hasBuiltCaches = false;
         this.restrictions.clear();
+        this.preventInventory.clear();
     }
 }
