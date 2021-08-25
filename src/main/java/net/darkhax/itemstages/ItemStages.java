@@ -121,18 +121,22 @@ public class ItemStages {
             for (int slot = 0; slot < inv.getContainerSize(); slot++) {
                 
                 final ItemStack slotContent = inv.getItem(slot);
-                final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(player, stageData, slotContent);
                 
-                if (restriction != null && restriction.shouldPreventInventory()) {
+                if (!slotContent.isEmpty()) {
                     
-                    inv.setItem(slot, ItemStack.EMPTY);
-                    player.drop(slotContent, false);
+                    final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(player, stageData, slotContent);
                     
-                    final ITextComponent message = restriction.getDropMessage(slotContent);
-                    
-                    if (message != null) {
+                    if (restriction != null && restriction.shouldPreventInventory()) {
                         
-                        player.sendMessage(message, Util.NIL_UUID);
+                        inv.setItem(slot, ItemStack.EMPTY);
+                        player.drop(slotContent, false);
+                        
+                        final ITextComponent message = restriction.getDropMessage(slotContent);
+                        
+                        if (message != null) {
+                            
+                            player.sendMessage(message, Util.NIL_UUID);
+                        }
                     }
                 }
             }
