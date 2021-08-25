@@ -1,6 +1,9 @@
 package net.darkhax.itemstages.crt;
 
+import java.util.Arrays;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.openzen.zencode.java.ZenCodeType;
 
@@ -45,6 +48,13 @@ public class ZenItemStages {
     public static Restriction createModRestriction (String modid, String... requiredStages) {
         
         return restrictInternal(stack -> modid.equalsIgnoreCase(stack.getItem().getRegistryName().getNamespace()), requiredStages);
+    }
+    
+    @ZenCodeType.Method
+    public static Restriction createModRestriction (String[] modids, String... requiredStages) {
+        
+        final Set<String> restrictedModIds = Arrays.stream(modids).collect(Collectors.toSet());
+        return restrictInternal(stack -> restrictedModIds.contains(stack.getItem().getRegistryName().getNamespace()), requiredStages);
     }
     
     @ZenCodeType.Method
