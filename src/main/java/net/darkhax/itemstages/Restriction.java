@@ -187,6 +187,14 @@ public class Restriction {
     
     public boolean isRestricted (ItemStack stack) {
         
-        return this.restricted.stream().anyMatch(r -> r.test(stack));
+        for (final Predicate<ItemStack> condition : this.restricted) {
+            
+            if (condition.test(stack)) {
+                
+                return true;
+            }
+        }
+        
+        return false;
     }
 }
