@@ -74,7 +74,7 @@ public class RestrictionManager extends ReloadListener<Void> {
             
             this.buildCaches();
             
-            for (final String stageName : restrictionPool.keys()) {
+            for (final String stageName : restrictionPool.keySet()) {
                 
                 if (!GameStageHelper.hasStage(player, stageData, stageName)) {
                     
