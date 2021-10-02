@@ -1,0 +1,15 @@
+{
+    "tooltip.itemstages.hidden_name": "Unbekannter Gegenstand",
+    "tooltip.itemstages.item.description": "Dieser Gegenstand erfordert Stufe [%s]",
+    "message.itemstages.drop": "Du hast %s fallengelassen.",
+    "message.itemstages.mine": "Du weißt nicht, wie man mit %s abbaut.",
+    "message.itemstages.attack": "Du weißt nicht, wie man mit %s attackiert.",
+    "message.itemstages.use": "Du weißt nicht, wie man %s benutzt.",
+    "message.itemstages.pickup": "Du konntest %s nicht aufheben.",
+
+    "tooltip.itemstages.debug.drop": "- Dieser Gegenstand wird aus dem Inventar geworfen.",
+    "tooltip.itemstages.debug.pickup": "- Dieser Gegenstand kann nicht aufgehoben werden.",
+    "tooltip.itemstages.debug.use": "- Dieser Gegenstand kann nicht an Blöcken oder Kreaturen benutzt werden.",
+    "tooltip.itemstages.debug.attack": "- Dieser Gegenstand kann nicht als Waffe benutzt werden.",
+    "tooltip.itemstages.debug.jei": "- Dieser Gegenstand wird in JEI ausgeblendet."
+}
