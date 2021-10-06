@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.openzen.zencode.java.ZenCodeType;
 
 import com.blamejared.crafttweaker.api.annotations.ZenRegister;
@@ -47,14 +49,26 @@ public class ZenItemStages {
     @ZenCodeType.Method
     public static Restriction createModRestriction (String modid, String... requiredStages) {
         
-        return restrictInternal(stack -> modid.equalsIgnoreCase(stack.getItem().getRegistryName().getNamespace()), requiredStages);
+        return createModRestriction(modid, null, requiredStages);
     }
     
     @ZenCodeType.Method
     public static Restriction createModRestriction (String[] modids, String... requiredStages) {
         
+        return createModRestriction(modids, null, requiredStages);
+    }
+    
+    @ZenCodeType.Method
+    public static Restriction createModRestriction (String modid, @Nullable Predicate<IItemStack> filter, String... requiredStages) {
+        
+        return restrictInternal(stack -> modid.equalsIgnoreCase(stack.getItem().getRegistryName().getNamespace()) && (filter == null || !filter.test(new MCItemStack(stack))), requiredStages);
+    }
+    
+    @ZenCodeType.Method
+    public static Restriction createModRestriction (String[] modids, @Nullable Predicate<IItemStack> filter, String... requiredStages) {
+        
         final Set<String> restrictedModIds = Arrays.stream(modids).collect(Collectors.toSet());
-        return restrictInternal(stack -> restrictedModIds.contains(stack.getItem().getRegistryName().getNamespace()), requiredStages);
+        return restrictInternal(stack -> restrictedModIds.contains(stack.getItem().getRegistryName().getNamespace()) && (filter == null || !filter.test(new MCItemStack(stack))), requiredStages);
     }
     
     @ZenCodeType.Method
