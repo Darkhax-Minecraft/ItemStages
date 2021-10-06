@@ -24,6 +24,7 @@ public class Restriction {
     private Function<ItemStack, ITextComponent> hiddenName = stack -> new TranslationTextComponent("tooltip.itemstages.hidden_name", stack.getHoverName()).withStyle(TextFormatting.RED);
     
     private boolean preventInventory = true;
+    private boolean preventEquipment = true;
     private Function<ItemStack, ITextComponent> dropMessage = stack -> new TranslationTextComponent("message.itemstages.drop", stack.getHoverName()).withStyle(TextFormatting.RED);
     
     private boolean preventAttacking = true;
@@ -67,6 +68,17 @@ public class Restriction {
     public Restriction setPreventInventory (boolean preventInventory) {
         
         this.preventInventory = preventInventory;
+        return this;
+    }
+    
+    public boolean shouldPreventEquipment () {
+        
+        return this.preventEquipment;
+    }
+    
+    public Restriction setPreventEquipment (boolean preventEquipment) {
+        
+        this.preventEquipment = preventEquipment;
         return this;
     }
     

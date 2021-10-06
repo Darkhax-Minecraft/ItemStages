@@ -118,24 +118,50 @@ public class ItemStages {
             final IStageData stageData = GameStageHelper.getPlayerData(player);
             final PlayerInventory inv = player.inventory;
             
+            final int armorStart = inv.items.size();
+            final int armorEnd = armorStart + inv.armor.size();
+            
             for (int slot = 0; slot < inv.getContainerSize(); slot++) {
                 
                 final ItemStack slotContent = inv.getItem(slot);
                 
                 if (!slotContent.isEmpty()) {
                     
-                    final Restriction restriction = RestrictionManager.INSTANCE.getInventoryRestriction(player, stageData, slotContent);
-                    
-                    if (restriction != null && restriction.shouldPreventInventory()) {
+                    // Armor
+                    if (slot >= armorStart && slot <= armorEnd) {
                         
-                        inv.setItem(slot, ItemStack.EMPTY);
-                        player.drop(slotContent, false);
+                        final Restriction restriction = RestrictionManager.INSTANCE.getEquipmentRestriction(player, stageData, slotContent);
                         
-                        final ITextComponent message = restriction.getDropMessage(slotContent);
-                        
-                        if (message != null) {
+                        if (restriction != null && restriction.shouldPreventEquipment()) {
                             
-                            player.sendMessage(message, Util.NIL_UUID);
+                            inv.setItem(slot, ItemStack.EMPTY);
+                            player.drop(slotContent, false);
+                            
+                            final ITextComponent message = restriction.getDropMessage(slotContent);
+                            
+                            if (message != null) {
+                                
+                                player.sendMessage(message, Util.NIL_UUID);
+                            }
+                        }
+                    }
+                    
+                    // Inventory
+                    else {
+                        
+                        final Restriction restriction = RestrictionManager.INSTANCE.getInventoryRestriction(player, stageData, slotContent);
+                        
+                        if (restriction != null && restriction.shouldPreventInventory()) {
+                            
+                            inv.setItem(slot, ItemStack.EMPTY);
+                            player.drop(slotContent, false);
+                            
+                            final ITextComponent message = restriction.getDropMessage(slotContent);
+                            
+                            if (message != null) {
+                                
+                                player.sendMessage(message, Util.NIL_UUID);
+                            }
                         }
                     }
                 }

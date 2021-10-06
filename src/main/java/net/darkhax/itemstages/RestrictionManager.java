@@ -28,6 +28,8 @@ public class RestrictionManager extends ReloadListener<Void> {
     
     private final Multimap<String, Restriction> preventInventory = HashMultimap.create();
     
+    private final Multimap<String, Restriction> preventEquipment = HashMultimap.create();
+    
     private boolean hasBuiltCaches = false;
     
     private void buildCaches () {
@@ -41,6 +43,11 @@ public class RestrictionManager extends ReloadListener<Void> {
                     if (restriction.shouldPreventInventory()) {
                         
                         this.preventInventory.put(stage, restriction);
+                    }
+                    
+                    if (restriction.shouldPreventEquipment()) {
+                        
+                        this.preventEquipment.put(stage, restriction);
                     }
                 }
             }
@@ -65,6 +72,12 @@ public class RestrictionManager extends ReloadListener<Void> {
     public Restriction getInventoryRestriction (PlayerEntity player, IStageData stageData, ItemStack stack) {
         
         return this.getRestriction(player, stageData, stack, this.preventInventory);
+    }
+    
+    @Nullable
+    public Restriction getEquipmentRestriction (PlayerEntity player, IStageData stageData, ItemStack stack) {
+        
+        return this.getRestriction(player, stageData, stack, this.preventEquipment);
     }
     
     @Nullable

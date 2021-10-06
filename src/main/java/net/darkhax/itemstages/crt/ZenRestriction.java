@@ -63,6 +63,18 @@ public class ZenRestriction {
     }
     
     @ZenCodeType.Method
+    public static Restriction preventEquipment (Restriction self) {
+        
+        return preventEquipment(self, true);
+    }
+    
+    @ZenCodeType.Method
+    public static Restriction preventEquipment (Restriction self, boolean preventEquipment) {
+        
+        return self.setPreventEquipment(preventEquipment);
+    }
+    
+    @ZenCodeType.Method
     public static Restriction dropMessage (Restriction self, MCTextComponent text) {
         
         return dropMessage(self, stack -> text);
