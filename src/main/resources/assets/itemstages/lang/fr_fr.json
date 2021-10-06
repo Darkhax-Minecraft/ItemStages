@@ -1,0 +1,15 @@
+{
+    "tooltip.itemstages.hidden_name": "Objet inconnu",
+    "tooltip.itemstages.item.description": "Cet objet requiert le stage [%s]",
+    "message.itemstages.drop": "Vous avez lâché %s.",
+    "message.itemstages.mine": "Vous ne savez pas miner avec %s.",
+    "message.itemstages.attack": "Vous ne savez pas attaquer avec %s.",
+    "message.itemstages.use": "Vous ne savez pas utiliser %s.",
+    "message.itemstages.pickup": "Vous ne pouvez pas ramasser %s.",
+    
+    "tooltip.itemstages.debug.drop": "- Cet objet sera lâché de l'inventaire.",
+    "tooltip.itemstages.debug.pickup": "- Cet objet ne peut pas être ramassé.",
+    "tooltip.itemstages.debug.use": "- Cet objet ne peut pas être utilisé sur les blocs ou entités.",
+    "tooltip.itemstages.debug.attack": "- Cet objet ne peut pas servir d'arme.",
+    "tooltip.itemstages.debug.jei": "- Cet objet sera câché dans JEI."
+}
