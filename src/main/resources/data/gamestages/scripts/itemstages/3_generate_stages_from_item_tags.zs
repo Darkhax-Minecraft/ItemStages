@@ -13,7 +13,7 @@ This script automatically generates ItemStages from vanilla's Datapack Tags.
 You can use something like OpenLoader to make a global datapack.
 You can find documentation on Vanilla datapacks here: https://minecraft.fandom.com/wiki/Data_pack
 
-Given the syntax for CraftTweaker / ItemStages doesn't change, this should work for any version 1.13 and above
+Given the syntax for CraftTweaker / ItemStages hasn't changed, this should work for any version 1.13 and above
 Try making a tag of tags to keep your tag files clean and legible!
 
 --=[BEGIN SCRIPT]=--
