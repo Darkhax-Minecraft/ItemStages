@@ -1,0 +1,10 @@
+#Russian ItemStages Translation
+tooltip.itemstages.name.default=Неизвестный предмет
+tooltip.itemstages.description=Вы ещё не знаете как это использовать.
+tooltip.itemstages.info=Вам сначала нужен этап %s.
+tooltip.itemstages.stage=Этап:
+tooltip.itemstages.enchant=Вы не можете использовать это без понимания зачаровований.
+
+message.itemstages.drop=Вы выбросили %s.
+
+message.itemstages.attack=Вы не можете наносить урон с помощью %s, не понимая зачарования.
