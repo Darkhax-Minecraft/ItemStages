@@ -1,0 +1,15 @@
+{
+    "tooltip.itemstages.hidden_name": "Неизвестный предмет",
+    "tooltip.itemstages.item.description": "Этот предмет был улучшен до этапа [%s]",
+    "message.itemstages.drop": "Вы выбросили %s.",
+    "message.itemstages.mine": "Вы незнаете как копать с %s.",
+    "message.itemstages.attack": "Вы незнаете как атаковать с %s.",
+    "message.itemstages.use": "Вы незнаете как использовать %s.",
+    "message.itemstages.pickup": "Вы не можете взять %s.",
+    
+    "tooltip.itemstages.debug.drop": "- Этот предмет был выброшен из вашего инвентаря.",
+    "tooltip.itemstages.debug.pickup": "- Этот предмет не может быть поднят.",
+    "tooltip.itemstages.debug.use": "- Этот предмет не может быть использован на блоках или сущностях.",
+    "tooltip.itemstages.debug.attack": "- Этот предмет не может быть использован для атаки.",
+    "tooltip.itemstages.debug.jei": "- Этот предмет будет спрятан в JEI."
+}
