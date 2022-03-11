@@ -1,0 +1,14 @@
+{
+    "message.itemstages.drop":"Вы сбросили %s.",
+    "message.itemstages.mine":"Вам неизвестно как копать с помощью %s.",
+    "message.itemstages.attack":"Вам неизвестно как атаковать с помощью %s.",
+    "message.itemstages.use":"Вам неизвестно как пользоваться %s.",
+    "message.itemstages.pickup":"Вы не можете поднять неизвестный вам предмет %s.",
+    "tooltip.itemstages.hidden_name":"Неизвестный Предмет",
+    "tooltip.itemstages.item.description":"Этот предмет находится в стадии [%s]",
+    "tooltip.itemstages.debug.drop":"- Этот предмет будет сброшен из инвенторя.",
+    "tooltip.itemstages.debug.pickup":"- Этот предмет не может быть подобран.",
+    "tooltip.itemstages.debug.use":"- Этот предмет нельзя использовать на блоках или сущностях.",
+    "tooltip.itemstages.debug.attack":"- Этот предмет нельзя использовать как оружие.",
+    "tooltip.itemstages.debug.jei":"- Этот предмет будет скрыть в JEI."
+}
