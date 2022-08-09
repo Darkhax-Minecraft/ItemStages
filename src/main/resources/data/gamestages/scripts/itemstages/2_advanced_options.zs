@@ -1,4 +1,5 @@
 import mods.itemstages.ItemStages;
+import mods.itemstages.Restriction;
 
 // When a restriction is created an object is returned that allows you to 
 // independently modify how that restriction should behave. This can be stored 

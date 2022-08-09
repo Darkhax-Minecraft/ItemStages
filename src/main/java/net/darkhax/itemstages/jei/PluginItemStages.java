@@ -10,22 +10,22 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
-import net.darkhax.bookshelf.util.PlayerUtils;
 import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.gamestages.data.IStageData;
 import net.darkhax.gamestages.event.StagesSyncedEvent;
 import net.darkhax.itemstages.ItemStages;
 import net.darkhax.itemstages.Restriction;
 import net.darkhax.itemstages.RestrictionManager;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
+import net.minecraftforge.fml.util.thread.EffectiveSide;
 
 @JeiPlugin
 @OnlyIn(Dist.CLIENT)
@@ -60,17 +60,18 @@ public class PluginItemStages implements IModPlugin {
     
     private void updateHiddenItems () {
         
-        if (this.runtime != null && this.runtime.getIngredientManager() != null) {
-            
+        if (this.runtime != null) {
+            this.runtime.getIngredientManager();
+
             final long syncStart = System.nanoTime();
             final IIngredientManager ingredients = this.runtime.getIngredientManager();
-            
+
             ItemStages.LOGGER.debug("Syncing JEI with ItemStages.");
-            
+
             this.restoreStagedItems(ingredients);
             this.collectStagedIngredients(ingredients);
             this.hideStagedIngredients(ingredients);
-            
+
             ItemStages.LOGGER.debug("JEI has been synced with ItemStages. Took {}ms.", FORMAT.format((System.nanoTime() - syncStart) / 1000000));
         }
     }
@@ -96,7 +97,7 @@ public class PluginItemStages implements IModPlugin {
         ItemStages.LOGGER.debug("Calculating items to hide.");
         final long hideCalcStart = System.nanoTime();
         final RestrictionManager restrictions = RestrictionManager.INSTANCE;
-        final PlayerEntity player = PlayerUtils.getClientPlayer();
+        final Player player = Minecraft.getInstance().player;//TODO PlayerUtils.getClientPlayer();
         final IStageData stageData = GameStageHelper.getPlayerData(player);
         
         for (final ItemStack ingredient : ingredients.getAllIngredients(VanillaTypes.ITEM)) {

@@ -3,22 +3,22 @@ package net.darkhax.itemstages;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.darkhax.bookshelf.api.util.TextHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.darkhax.bookshelf.util.TextUtils;
 import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.gamestages.data.GameStageSaveHandler;
 import net.darkhax.gamestages.data.IStageData;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.Util;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -60,7 +60,7 @@ public class ItemStages {
         
         if (this.canAffectPlayer(event.getSource())) {
             
-            final PlayerEntity player = (PlayerEntity) event.getSource().getEntity();
+            final Player player = (Player) event.getSource().getEntity();
             final ItemStack stack = player.getMainHandItem();
             final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(player, stack);
             
@@ -68,7 +68,7 @@ public class ItemStages {
                 
                 event.setCanceled(true);
                 
-                final ITextComponent message = restriction.getAttackMessage(stack);
+                final Component message = restriction.getAttackMessage(stack);
                 player.sendMessage(message, Util.NIL_UUID);
             }
         }
@@ -85,7 +85,7 @@ public class ItemStages {
                 
                 event.setCanceled(true);
                 
-                final ITextComponent message = restriction.getUsageMessage(stack);
+                final Component message = restriction.getUsageMessage(stack);
                 event.getPlayer().sendMessage(message, Util.NIL_UUID);
             }
         }
@@ -104,7 +104,7 @@ public class ItemStages {
                 event.getItem().setPickUpDelay(restriction.getPickupDelay());
                 // TODO consider extending life span by default delay.
                 
-                final ITextComponent message = restriction.getPickupMessage(stack);
+                final Component message = restriction.getPickupMessage(stack);
                 event.getPlayer().sendMessage(message, Util.NIL_UUID);
             }
         }
@@ -114,9 +114,9 @@ public class ItemStages {
         
         if (event.phase == Phase.START && event.player != null && !event.player.level.isClientSide && !(event.player instanceof FakePlayer)) {
             
-            final PlayerEntity player = event.player;
+            final Player player = event.player;
             final IStageData stageData = GameStageHelper.getPlayerData(player);
-            final PlayerInventory inv = player.inventory;
+            final Inventory inv = player.getInventory();
             
             final int armorStart = inv.items.size();
             final int armorEnd = armorStart + inv.armor.size();
@@ -137,7 +137,7 @@ public class ItemStages {
                             inv.setItem(slot, ItemStack.EMPTY);
                             player.drop(slotContent, false);
                             
-                            final ITextComponent message = restriction.getDropMessage(slotContent);
+                            final Component message = restriction.getDropMessage(slotContent);
                             
                             if (message != null) {
                                 
@@ -156,7 +156,7 @@ public class ItemStages {
                             inv.setItem(slot, ItemStack.EMPTY);
                             player.drop(slotContent, false);
                             
-                            final ITextComponent message = restriction.getDropMessage(slotContent);
+                            final Component message = restriction.getDropMessage(slotContent);
                             
                             if (message != null) {
                                 
@@ -173,7 +173,7 @@ public class ItemStages {
         
         if (event.getPlayer() != null) {
             
-            final PlayerEntity player = event.getPlayer();
+            final Player player = event.getPlayer();
             final IStageData data = GameStageSaveHandler.getClientData();
             final ItemStack stack = event.getItemStack();
             
@@ -182,7 +182,7 @@ public class ItemStages {
             if (restriction != null) {
                 
                 event.getToolTip().clear();
-                final ITextComponent hiddenName = restriction.getHiddenName(stack);
+                final Component hiddenName = restriction.getHiddenName(stack);
                 
                 if (hiddenName != null) {
                     
@@ -192,41 +192,42 @@ public class ItemStages {
                 // Debug tooltip shows which stages the player doesn't have.
                 if (event.getFlags().isAdvanced()) {
                     
-                    final List<ITextComponent> stages = new ArrayList<>();
+                    final List<Component> stages = new ArrayList<>();
                     
-                    final ITextComponent sep = new StringTextComponent(", ").withStyle(TextFormatting.GRAY);
+                    final Component sep = new TextComponent(", ").withStyle(ChatFormatting.GRAY);
                     
                     for (final String stage : restriction.getStages()) {
                         
-                        stages.add(new StringTextComponent(stage).withStyle(data.hasStage(stage) ? TextFormatting.GREEN : TextFormatting.RED));
+                        stages.add(new TextComponent(stage).withStyle(data.hasStage(stage) ? ChatFormatting.GREEN : ChatFormatting.RED));
                     }
-                    
-                    final ITextComponent desc = new TranslationTextComponent("tooltip.itemstages.item.description", TextUtils.join(sep, stages)).withStyle(TextFormatting.GRAY);
+
+                    //TODO TextUtils.join(sep, stages)
+                    final Component desc = new TranslatableComponent("tooltip.itemstages.item.description", TextHelper.lookupTranslation(String.valueOf(sep), stages)).withStyle(ChatFormatting.GRAY);
                     event.getToolTip().add(desc);
                     
                     if (restriction.shouldPreventInventory()) {
                         
-                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.drop").withStyle(TextFormatting.RED));
+                        event.getToolTip().add(new TranslatableComponent("tooltip.itemstages.debug.drop").withStyle(ChatFormatting.RED));
                     }
                     
                     if (restriction.shouldPreventPickup()) {
                         
-                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.pickup").withStyle(TextFormatting.RED));
+                        event.getToolTip().add(new TranslatableComponent("tooltip.itemstages.debug.pickup").withStyle(ChatFormatting.RED));
                     }
                     
                     if (restriction.shouldPreventUsing()) {
                         
-                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.use").withStyle(TextFormatting.RED));
+                        event.getToolTip().add(new TranslatableComponent("tooltip.itemstages.debug.use").withStyle(ChatFormatting.RED));
                     }
                     
                     if (restriction.shouldPreventAttacking()) {
                         
-                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.attack").withStyle(TextFormatting.RED));
+                        event.getToolTip().add(new TranslatableComponent("tooltip.itemstages.debug.attack").withStyle(ChatFormatting.RED));
                     }
                     
                     if (restriction.shouldHideInJEI()) {
                         
-                        event.getToolTip().add(new TranslationTextComponent("tooltip.itemstages.debug.jei").withStyle(TextFormatting.RED));
+                        event.getToolTip().add(new TranslatableComponent("tooltip.itemstages.debug.jei").withStyle(ChatFormatting.RED));
                     }
                 }
             }
@@ -235,10 +236,10 @@ public class ItemStages {
     
     private final boolean canAffectPlayer (DamageSource source) {
         
-        return source != null && source.getEntity() instanceof PlayerEntity && this.canAffectPlayer((PlayerEntity) source.getEntity());
+        return source != null && source.getEntity() instanceof Player && this.canAffectPlayer((Player) source.getEntity());
     }
     
-    private final boolean canAffectPlayer (PlayerEntity player) {
+    private final boolean canAffectPlayer (Player player) {
         
         return player != null && !player.level.isClientSide && !(player instanceof FakePlayer);
     }

@@ -7,32 +7,31 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
+import com.blamejared.crafttweaker.api.ingredient.IIngredient;
+import com.blamejared.crafttweaker.api.item.MCItemStack;
+import com.blamejared.crafttweaker.api.zencode.util.PositionUtil;
 import org.openzen.zencode.java.ZenCodeType;
 
-import com.blamejared.crafttweaker.api.annotations.ZenRegister;
-import com.blamejared.crafttweaker.api.item.IIngredient;
 import com.blamejared.crafttweaker.api.item.IItemStack;
-import com.blamejared.crafttweaker.api.zencode.impl.util.PositionUtil;
-import com.blamejared.crafttweaker.impl.item.MCItemStack;
 
 import net.darkhax.itemstages.Restriction;
 import net.darkhax.itemstages.crt.actions.ActionCreateRestriction;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 
 @ZenRegister
 @ZenCodeType.Name("mods.itemstages.ItemStages")
 public class ZenItemStages {
     
-    @ZenCodeType.Method
+    /*@ZenCodeType.Method
     public static Restriction restrict (ToolType type, String... requiredStages) {
         
         return restrictInternal(stack -> stack.getItem().getToolTypes(stack).contains(type), requiredStages);
-    }
+    }*/
     
     @ZenCodeType.Method
     public static Restriction restrict (Enchantment enchantment, String... requiredStages) {
@@ -115,11 +114,8 @@ public class ZenItemStages {
                 
                 return true;
             }
-            
-            if (checkItem && EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack) > 0) {
-                
-                return true;
-            }
+
+            return checkItem && EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack) > 0;
         }
         
         return false;
