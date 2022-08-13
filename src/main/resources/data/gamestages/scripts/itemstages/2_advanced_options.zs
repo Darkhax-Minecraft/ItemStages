@@ -1,5 +1,7 @@
 import mods.itemstages.ItemStages;
 import mods.itemstages.Restriction;
+import crafttweaker.api.text.TextComponent;
+import crafttweaker.api.text.TranslatableComponent;
 
 // When a restriction is created an object is returned that allows you to 
 // independently modify how that restriction should behave. This can be stored 
@@ -11,12 +13,16 @@ import mods.itemstages.Restriction;
 val one = ItemStages.restrict(<item:minecraft:gold_ingot>, "adv_one");
 
 // By default restricted items will be named "Unfamiliar Item" however you can
-// create a custom name to dispaly instead. You can even define a function that
+// create a custom name to display instead. You can even define a function that
 // change the name based on the item being restricted. In this case we simply
 // rename gold ingots to lemon bars temporarily.
-// Restriction#hiddenName(MCTextComponent hiddenName);
-// Restriction#hiddenName(Function<IItemStack, MCTextComponent> hiddenNameGenerator);
-one.hiddenName("Lemon Bar");
+// Restriction#hiddenName(TextComponent hiddenName);
+// Restriction#hiddenName(Function<IItemStack, TextComponent> hiddenNameGenerator);
+one.hiddenName(new TextComponent("Lemon Bar"));
+
+// We can also use TranslatableComponent to declare a custom name to be displayed.
+val one_new = ItemStages.restrict(<item:minecraft:iron_ingot>, "adv_one_new");
+one_new.hiddenName(new TranslatableComponent("itemstages.hidden_name"));
 
 // By default items are restricted to the greatest degree possible however you
 // may want to ease certain parts of the restriction. For example you may want

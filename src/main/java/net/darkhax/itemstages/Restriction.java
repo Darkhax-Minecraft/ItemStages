@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TranslatableComponent;
 
+@SuppressWarnings("unused")
 public class Restriction {
     
     private final Collection<Predicate<ItemStack>> restricted = new ArrayList<>();

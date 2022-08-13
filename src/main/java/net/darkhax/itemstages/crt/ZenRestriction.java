@@ -2,13 +2,12 @@ package net.darkhax.itemstages.crt;
 
 import java.util.function.Function;
 
+import com.blamejared.crafttweaker_annotations.annotations.NativeTypeRegistration;
 import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker.api.ingredient.IIngredient;
 import com.blamejared.crafttweaker.api.item.MCItemStack;
-import org.openzen.zencode.java.ZenCodeType;
-
 import com.blamejared.crafttweaker.api.item.IItemStack;
-import com.blamejared.crafttweaker_annotations.annotations.NativeTypeRegistration;
+import org.openzen.zencode.java.ZenCodeType;
 
 import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.itemstages.Restriction;
@@ -16,13 +15,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 
+@SuppressWarnings("unused")
 @ZenRegister
 @NativeTypeRegistration(value = Restriction.class, zenCodeName = "mods.itemstages.Restriction")
 public class ZenRestriction {
 
-    private static Function<ItemStack, Component> wrapTextFunc (Function<IItemStack, String> crtFunc) {
+    private static Function<ItemStack, Component> wrapTextFunc (Function<IItemStack, Component> crtFunc) {
 
-        return stack -> Component.nullToEmpty(crtFunc.apply(new MCItemStack(stack)));
+        return stack -> crtFunc.apply(new MCItemStack(stack));
     }
 
     @ZenCodeType.Method
@@ -38,13 +38,13 @@ public class ZenRestriction {
     }
 
     @ZenCodeType.Method
-    public static Restriction hiddenName (Restriction self, String text) {
+    public static Restriction hiddenName (Restriction self, Component text) {
 
         return hiddenName(self, stack -> text);
     }
 
     @ZenCodeType.Method
-    public static Restriction hiddenName (Restriction self, Function<IItemStack, String> textFunc) {
+    public static Restriction hiddenName (Restriction self, Function<IItemStack, Component> textFunc) {
 
         return self.setHiddenName(wrapTextFunc(textFunc));
     }
@@ -74,13 +74,13 @@ public class ZenRestriction {
     }
 
     @ZenCodeType.Method
-    public static Restriction dropMessage (Restriction self, String text) {
+    public static Restriction dropMessage (Restriction self, Component text) {
 
         return dropMessage(self, stack -> text);
     }
 
     @ZenCodeType.Method
-    public static Restriction dropMessage (Restriction self, Function<IItemStack, String> textFunc) {
+    public static Restriction dropMessage (Restriction self, Function<IItemStack, Component> textFunc) {
 
         return self.setDropMessage(wrapTextFunc(textFunc));
     }
@@ -98,13 +98,13 @@ public class ZenRestriction {
     }
 
     @ZenCodeType.Method
-    public static Restriction attackMessage (Restriction self, String text) {
+    public static Restriction attackMessage (Restriction self, Component text) {
 
         return attackMessage(self, stack -> text);
     }
 
     @ZenCodeType.Method
-    public static Restriction attackMessage (Restriction self, Function<IItemStack, String> textFunc) {
+    public static Restriction attackMessage (Restriction self, Function<IItemStack, Component> textFunc) {
 
         return self.setAttackMessage(wrapTextFunc(textFunc));
     }
@@ -128,13 +128,13 @@ public class ZenRestriction {
     }
 
     @ZenCodeType.Method
-    public static Restriction pickupMessage (Restriction self, String text) {
+    public static Restriction pickupMessage (Restriction self, Component text) {
 
         return pickupMessage(self, stack -> text);
     }
 
     @ZenCodeType.Method
-    public static Restriction pickupMessage (Restriction self, Function<IItemStack, String> textFunc) {
+    public static Restriction pickupMessage (Restriction self, Function<IItemStack, Component> textFunc) {
 
         return self.setPickupMessage(wrapTextFunc(textFunc));
     }
@@ -152,13 +152,13 @@ public class ZenRestriction {
     }
 
     @ZenCodeType.Method
-    public static Restriction usageMessage (Restriction self, String text) {
+    public static Restriction usageMessage (Restriction self, Component text) {
 
         return usageMessage(self, stack -> text);
     }
 
     @ZenCodeType.Method
-    public static Restriction usageMessage (Restriction self, Function<IItemStack, String> textFunc) {
+    public static Restriction usageMessage (Restriction self, Function<IItemStack, Component> textFunc) {
         
         return self.setUsageMessage(wrapTextFunc(textFunc));
     }

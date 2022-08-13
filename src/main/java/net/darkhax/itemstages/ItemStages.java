@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.darkhax.bookshelf.api.util.TextHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.gamestages.data.GameStageSaveHandler;
 import net.darkhax.gamestages.data.IStageData;
+
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -31,10 +29,13 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Mod("itemstages")
 public class ItemStages {
     
-    public static final Logger LOGGER = LogManager.getLogger("Item Stages");
+    public static final Logger LOGGER = LoggerFactory.getLogger("Item Stages");
     
     public ItemStages() {
         
@@ -58,9 +59,8 @@ public class ItemStages {
     
     private void onEntityHurt (LivingAttackEvent event) {
         
-        if (this.canAffectPlayer(event.getSource())) {
-            
-            final Player player = (Player) event.getSource().getEntity();
+        if (this.canAffectPlayer(event.getSource()) && event.getSource().getEntity() instanceof final Player player) {
+
             final ItemStack stack = player.getMainHandItem();
             final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(player, stack);
             
@@ -234,12 +234,12 @@ public class ItemStages {
         }
     }
     
-    private final boolean canAffectPlayer (DamageSource source) {
+    private boolean canAffectPlayer (DamageSource source) {
         
         return source != null && source.getEntity() instanceof Player && this.canAffectPlayer((Player) source.getEntity());
     }
     
-    private final boolean canAffectPlayer (Player player) {
+    private boolean canAffectPlayer (Player player) {
         
         return player != null && !player.level.isClientSide && !(player instanceof FakePlayer);
     }

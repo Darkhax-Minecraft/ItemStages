@@ -26,7 +26,9 @@ import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.util.thread.EffectiveSide;
+import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("unused")
 @JeiPlugin
 @OnlyIn(Dist.CLIENT)
 public class PluginItemStages implements IModPlugin {
@@ -84,7 +86,7 @@ public class PluginItemStages implements IModPlugin {
         
         if (!this.hiddenItems.isEmpty()) {
             
-            ingredients.addIngredientsAtRuntime(VanillaTypes.ITEM, this.hiddenItems);
+            ingredients.addIngredientsAtRuntime(VanillaTypes.ITEM_STACK, this.hiddenItems);
             this.hiddenItems.clear();
         }
         
@@ -100,7 +102,7 @@ public class PluginItemStages implements IModPlugin {
         final Player player = Minecraft.getInstance().player;//TODO PlayerUtils.getClientPlayer();
         final IStageData stageData = GameStageHelper.getPlayerData(player);
         
-        for (final ItemStack ingredient : ingredients.getAllIngredients(VanillaTypes.ITEM)) {
+        for (final ItemStack ingredient : ingredients.getAllIngredients(VanillaTypes.ITEM_STACK)) {
             
             final Restriction restriction = restrictions.getRestriction(player, stageData, ingredient);
             
@@ -121,7 +123,7 @@ public class PluginItemStages implements IModPlugin {
         
         if (!this.hiddenItems.isEmpty()) {
             
-            ingredients.removeIngredientsAtRuntime(VanillaTypes.ITEM, this.hiddenItems);
+            ingredients.removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, this.hiddenItems);
         }
         
         ItemStages.LOGGER.debug("All entries hidden. Took {}ms.", FORMAT.format((System.nanoTime() - hideStart) / 1000000));

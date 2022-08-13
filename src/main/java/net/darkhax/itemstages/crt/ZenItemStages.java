@@ -23,16 +23,11 @@ import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 
+@SuppressWarnings("unused")
 @ZenRegister
 @ZenCodeType.Name("mods.itemstages.ItemStages")
 public class ZenItemStages {
-    
-    /*@ZenCodeType.Method
-    public static Restriction restrict (ToolType type, String... requiredStages) {
-        
-        return restrictInternal(stack -> stack.getItem().getToolTypes(stack).contains(type), requiredStages);
-    }*/
-    
+
     @ZenCodeType.Method
     public static Restriction restrict (Enchantment enchantment, String... requiredStages) {
         
