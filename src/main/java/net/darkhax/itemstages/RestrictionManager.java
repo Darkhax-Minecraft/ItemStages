@@ -7,13 +7,13 @@ import com.google.common.collect.Multimap;
 
 import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.gamestages.data.IStageData;
-import net.minecraft.client.resources.ReloadListener;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.server.packs.resources.ResourceManager;
 
-public class RestrictionManager extends ReloadListener<Void> {
+public class RestrictionManager extends SimplePreparableReloadListener<Void> {
     
     public static final RestrictionManager INSTANCE = new RestrictionManager();
     
@@ -22,7 +22,7 @@ public class RestrictionManager extends ReloadListener<Void> {
      * the individual stages, and the values are a collection of every restriction that
      * requires the keyed stage. Restrictions with more than one required stage will be mapped
      * to multiple keys. This data structure is used to minimize the processing time required
-     * to look up restrictions in {@link #getRestriction(PlayerEntity, IStageData, ItemStack)}.
+     * to look up restrictions in {@link #getRestriction(Player, IStageData, ItemStack)}.
      */
     private final Multimap<String, Restriction> restrictions = HashMultimap.create();
     
@@ -57,31 +57,31 @@ public class RestrictionManager extends ReloadListener<Void> {
     }
     
     @Nullable
-    public Restriction getRestriction (PlayerEntity player, ItemStack stack) {
+    public Restriction getRestriction (Player player, ItemStack stack) {
         
         return this.getRestriction(player, GameStageHelper.getPlayerData(player), stack, this.restrictions);
     }
     
     @Nullable
-    public Restriction getRestriction (PlayerEntity player, IStageData stageData, ItemStack stack) {
+    public Restriction getRestriction (Player player, IStageData stageData, ItemStack stack) {
         
         return this.getRestriction(player, stageData, stack, this.restrictions);
     }
     
     @Nullable
-    public Restriction getInventoryRestriction (PlayerEntity player, IStageData stageData, ItemStack stack) {
+    public Restriction getInventoryRestriction (Player player, IStageData stageData, ItemStack stack) {
         
         return this.getRestriction(player, stageData, stack, this.preventInventory);
     }
     
     @Nullable
-    public Restriction getEquipmentRestriction (PlayerEntity player, IStageData stageData, ItemStack stack) {
+    public Restriction getEquipmentRestriction (Player player, IStageData stageData, ItemStack stack) {
         
         return this.getRestriction(player, stageData, stack, this.preventEquipment);
     }
     
     @Nullable
-    public Restriction getRestriction (PlayerEntity player, IStageData stageData, ItemStack stack, Multimap<String, Restriction> restrictionPool) {
+    public Restriction getRestriction (Player player, IStageData stageData, ItemStack stack, Multimap<String, Restriction> restrictionPool) {
         
         if (!stack.isEmpty()) {
             
@@ -117,14 +117,14 @@ public class RestrictionManager extends ReloadListener<Void> {
     }
     
     @Override
-    protected Void prepare (IResourceManager resourceManager, IProfiler profiler) {
+    protected Void prepare (ResourceManager resourceManager, ProfilerFiller profiler) {
         
         // Unused for now.
         return null;
     }
     
     @Override
-    protected void apply (Void object, IResourceManager resourceManager, IProfiler profiler) {
+    protected void apply (Void object, ResourceManager resourceManager, ProfilerFiller profiler) {
         
         this.hasBuiltCaches = false;
         this.restrictions.clear();

@@ -11,5 +11,6 @@
     "tooltip.itemstages.debug.pickup": "- This item can not be picked up.",
     "tooltip.itemstages.debug.use": "- This item can not be used on blocks or entities.",
     "tooltip.itemstages.debug.attack": "- This item can not be used as a weapon.",
-    "tooltip.itemstages.debug.jei": "- This item will be hidden in JEI."
+    "tooltip.itemstages.debug.jei": "- This item will be hidden in JEI.",
+    "itemstages.hidden_name": "Not so Unfamiliar Item"
 }

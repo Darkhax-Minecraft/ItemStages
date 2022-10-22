@@ -34,13 +34,8 @@ ItemStages.restrict(<enchantment:minecraft:sharpness>, "ex_four");
 // Restricts any item with a specific item rarity. In this case any item
 // with the epic rarity will be restricted.
 // ItemStages.restrict(Rarity rarity, String... requiredStages);
-import crafttweaker.api.item.Rarity;
+import crafttweaker.api.item.property.Rarity;
 ItemStages.restrict(Rarity.EPIC, "ex_four");
-
-// Restricts any item that has a specific tool type attributed to it. In this 
-// case any item that acts like a pickaxe will be restricted.
-// ItemStages.restrict(ToolType toolType, String... requiredStages);
-ItemStages.restrict(<tooltype:pickaxe>, "ex_four");
 
 // You can also restrict items based on their owning mod ID. Keep in mind that 
 // all items from that mod will be staged and you can not unstage or remove

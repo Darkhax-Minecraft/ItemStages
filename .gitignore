@@ -16,3 +16,4 @@ run/
 /.apt_generated_tests/
 /Users/
 .factorypath
+*.xml
