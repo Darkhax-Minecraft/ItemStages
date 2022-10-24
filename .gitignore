@@ -17,3 +17,5 @@ run/
 /Users/
 .factorypath
 *.xml
+
+.idea/
