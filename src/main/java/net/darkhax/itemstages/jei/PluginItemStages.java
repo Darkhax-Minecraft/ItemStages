@@ -61,21 +61,25 @@ public class PluginItemStages implements IModPlugin {
     }
     
     private void updateHiddenItems () {
-        
-        if (this.runtime != null) {
-            this.runtime.getIngredientManager();
 
-            final long syncStart = System.nanoTime();
-            final IIngredientManager ingredients = this.runtime.getIngredientManager();
+        Minecraft.getInstance().execute(() -> {
 
-            ItemStages.LOGGER.debug("Syncing JEI with ItemStages.");
+            if (this.runtime != null) {
 
-            this.restoreStagedItems(ingredients);
-            this.collectStagedIngredients(ingredients);
-            this.hideStagedIngredients(ingredients);
+                this.runtime.getIngredientManager();
 
-            ItemStages.LOGGER.debug("JEI has been synced with ItemStages. Took {}ms.", FORMAT.format((System.nanoTime() - syncStart) / 1000000));
-        }
+                final long syncStart = System.nanoTime();
+                final IIngredientManager ingredients = this.runtime.getIngredientManager();
+
+                ItemStages.LOGGER.debug("Syncing JEI with ItemStages.");
+
+                this.restoreStagedItems(ingredients);
+                this.collectStagedIngredients(ingredients);
+                this.hideStagedIngredients(ingredients);
+
+                ItemStages.LOGGER.debug("JEI has been synced with ItemStages. Took {}ms.", FORMAT.format((System.nanoTime() - syncStart) / 1000000));
+            }
+        });
     }
     
     private void restoreStagedItems (IIngredientManager ingredients) {

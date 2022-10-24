@@ -1,11 +1,11 @@
 modLoader="javafml"
-loaderVersion="[40,]"
+loaderVersion="[43,]"
 issueTrackerURL="https://github.com/Darkhax-Minecraft/ItemStages"
 license="LGPL v2.1"
 
 [[mods]]
 modId="itemstages"
-#updateJSONURL="https://updates.blamejared.com/get?n=itemstages&gv=1.18.2"
+#updateJSONURL="https://updates.blamejared.com/get?n=itemstages&gv=1.19.2"
 version="${file.jarVersion}"
 displayName="${modName}"
 displayURL="${modHomepage}"
@@ -19,34 +19,34 @@ itemIcon="minecraft:clock"
 [[dependencies.itemstages]]
     modId="forge"
     mandatory=true
-    versionRange="[40,]"
+    versionRange="[43,]"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.itemstages]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18.2]"
+    versionRange="[1.19.2]"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.itemstages]]
     modId="bookshelf"
     mandatory=true
-    versionRange="[13,)"
+    versionRange="[16,)"
     ordering="NONE"
     side="BOTH"
     
 [[dependencies.itemstages]]
     modId="crafttweaker"
     mandatory=false
-    versionRange="[9.1,)"
+    versionRange="[10,)"
     ordering="AFTER"
     side="BOTH"
     
 [[dependencies.itemstages]]
     modId="gamestages"
     mandatory=false
-    versionRange="[8,)"
+    versionRange="[11,)"
     ordering="AFTER"
     side="BOTH"

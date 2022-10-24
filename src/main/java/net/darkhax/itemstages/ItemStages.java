@@ -14,9 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -69,34 +67,34 @@ public class ItemStages {
                 event.setCanceled(true);
                 
                 final Component message = restriction.getAttackMessage(stack);
-                player.sendMessage(message, Util.NIL_UUID);
+                player.sendSystemMessage(message);
             }
         }
     }
     
     private void onItemUsed (PlayerInteractEvent event) {
         
-        if (event.isCancelable() && this.canAffectPlayer(event.getPlayer())) {
+        if (event.isCancelable() && this.canAffectPlayer(event.getEntity())) {
             
             final ItemStack stack = event.getItemStack();
-            final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(event.getPlayer(), stack);
+            final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(event.getEntity(), stack);
             
             if (restriction != null && restriction.shouldPreventUsing()) {
                 
                 event.setCanceled(true);
                 
                 final Component message = restriction.getUsageMessage(stack);
-                event.getPlayer().sendMessage(message, Util.NIL_UUID);
+                event.getEntity().sendSystemMessage(message);
             }
         }
     }
     
     private void onItemPickup (EntityItemPickupEvent event) {
         
-        if (this.canAffectPlayer(event.getPlayer())) {
+        if (this.canAffectPlayer(event.getEntity())) {
             
             final ItemStack stack = event.getItem().getItem();
-            final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(event.getPlayer(), stack);
+            final Restriction restriction = RestrictionManager.INSTANCE.getRestriction(event.getEntity(), stack);
             
             if (restriction != null && restriction.shouldPreventPickup()) {
                 
@@ -105,7 +103,7 @@ public class ItemStages {
                 // TODO consider extending life span by default delay.
                 
                 final Component message = restriction.getPickupMessage(stack);
-                event.getPlayer().sendMessage(message, Util.NIL_UUID);
+                event.getEntity().sendSystemMessage(message);
             }
         }
     }
@@ -141,7 +139,7 @@ public class ItemStages {
                             
                             if (message != null) {
                                 
-                                player.sendMessage(message, Util.NIL_UUID);
+                                player.sendSystemMessage(message);
                             }
                         }
                     }
@@ -160,7 +158,7 @@ public class ItemStages {
                             
                             if (message != null) {
                                 
-                                player.sendMessage(message, Util.NIL_UUID);
+                                player.sendSystemMessage(message);
                             }
                         }
                     }
@@ -171,9 +169,9 @@ public class ItemStages {
     
     private void onItemTooltip (ItemTooltipEvent event) {
         
-        if (event.getPlayer() != null) {
+        if (event.getEntity() != null) {
             
-            final Player player = event.getPlayer();
+            final Player player = event.getEntity();
             final IStageData data = GameStageSaveHandler.getClientData();
             final ItemStack stack = event.getItemStack();
             
@@ -194,40 +192,40 @@ public class ItemStages {
                     
                     final List<Component> stages = new ArrayList<>();
                     
-                    final Component sep = new TextComponent(", ").withStyle(ChatFormatting.GRAY);
+                    final Component sep = Component.literal(", ").withStyle(ChatFormatting.GRAY);
                     
                     for (final String stage : restriction.getStages()) {
                         
-                        stages.add(new TextComponent(stage).withStyle(data.hasStage(stage) ? ChatFormatting.GREEN : ChatFormatting.RED));
+                        stages.add(Component.literal(stage).withStyle(data.hasStage(stage) ? ChatFormatting.GREEN : ChatFormatting.RED));
                     }
 
                     //TODO TextUtils.join(sep, stages)
-                    final Component desc = new TranslatableComponent("tooltip.itemstages.item.description", TextHelper.lookupTranslation(String.valueOf(sep), stages)).withStyle(ChatFormatting.GRAY);
+                    final Component desc = Component.translatable("tooltip.itemstages.item.description", TextHelper.lookupTranslation(String.valueOf(sep), stages)).withStyle(ChatFormatting.GRAY);
                     event.getToolTip().add(desc);
                     
                     if (restriction.shouldPreventInventory()) {
                         
-                        event.getToolTip().add(new TranslatableComponent("tooltip.itemstages.debug.drop").withStyle(ChatFormatting.RED));
+                        event.getToolTip().add(Component.translatable("tooltip.itemstages.debug.drop").withStyle(ChatFormatting.RED));
                     }
                     
                     if (restriction.shouldPreventPickup()) {
                         
-                        event.getToolTip().add(new TranslatableComponent("tooltip.itemstages.debug.pickup").withStyle(ChatFormatting.RED));
+                        event.getToolTip().add(Component.translatable("tooltip.itemstages.debug.pickup").withStyle(ChatFormatting.RED));
                     }
                     
                     if (restriction.shouldPreventUsing()) {
                         
-                        event.getToolTip().add(new TranslatableComponent("tooltip.itemstages.debug.use").withStyle(ChatFormatting.RED));
+                        event.getToolTip().add(Component.translatable("tooltip.itemstages.debug.use").withStyle(ChatFormatting.RED));
                     }
                     
                     if (restriction.shouldPreventAttacking()) {
                         
-                        event.getToolTip().add(new TranslatableComponent("tooltip.itemstages.debug.attack").withStyle(ChatFormatting.RED));
+                        event.getToolTip().add(Component.translatable("tooltip.itemstages.debug.attack").withStyle(ChatFormatting.RED));
                     }
                     
                     if (restriction.shouldHideInJEI()) {
                         
-                        event.getToolTip().add(new TranslatableComponent("tooltip.itemstages.debug.jei").withStyle(ChatFormatting.RED));
+                        event.getToolTip().add(Component.translatable("tooltip.itemstages.debug.jei").withStyle(ChatFormatting.RED));
                     }
                 }
             }

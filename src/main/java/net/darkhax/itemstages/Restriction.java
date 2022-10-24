@@ -14,7 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TranslatableComponent;
 
 @SuppressWarnings("unused")
 public class Restriction {
@@ -22,21 +21,21 @@ public class Restriction {
     private final Collection<Predicate<ItemStack>> restricted = new ArrayList<>();
     private final Set<String> stages = new HashSet<>();
     
-    private Function<ItemStack, Component> hiddenName = stack -> new TranslatableComponent("tooltip.itemstages.hidden_name", stack.getHoverName()).withStyle(ChatFormatting.RED);
+    private Function<ItemStack, Component> hiddenName = stack -> Component.translatable("tooltip.itemstages.hidden_name", stack.getHoverName()).withStyle(ChatFormatting.RED);
     
     private boolean preventInventory = true;
     private boolean preventEquipment = true;
-    private Function<ItemStack, Component> dropMessage = stack -> new TranslatableComponent("message.itemstages.drop", stack.getHoverName()).withStyle(ChatFormatting.RED);
+    private Function<ItemStack, Component> dropMessage = stack -> Component.translatable("message.itemstages.drop", stack.getHoverName()).withStyle(ChatFormatting.RED);
     
     private boolean preventAttacking = true;
-    private Function<ItemStack, Component> attackMessage = stack -> new TranslatableComponent("message.itemstages.attack", stack.getHoverName()).withStyle(ChatFormatting.RED);
+    private Function<ItemStack, Component> attackMessage = stack -> Component.translatable("message.itemstages.attack", stack.getHoverName()).withStyle(ChatFormatting.RED);
     
     private boolean preventPickup = true;
     private int pickupDelay = 60;
-    private Function<ItemStack, Component> pickupMessage = stack -> new TranslatableComponent("message.itemstages.pickup", stack.getHoverName()).withStyle(ChatFormatting.RED);
+    private Function<ItemStack, Component> pickupMessage = stack -> Component.translatable("message.itemstages.pickup", stack.getHoverName()).withStyle(ChatFormatting.RED);
     
     private boolean preventUsing = true;
-    private Function<ItemStack, Component> usageMessage = stack -> new TranslatableComponent("message.itemstages.use", stack.getHoverName()).withStyle(ChatFormatting.RED);
+    private Function<ItemStack, Component> usageMessage = stack -> Component.translatable("message.itemstages.use", stack.getHoverName()).withStyle(ChatFormatting.RED);
     
     private boolean hideInJEI = true;
     
