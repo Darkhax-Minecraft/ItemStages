@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraftforge.common.MinecraftForge;
@@ -199,7 +198,8 @@ public class ItemStages {
                         stages.add(Component.literal(stage).withStyle(data.hasStage(stage) ? ChatFormatting.GREEN : ChatFormatting.RED));
                     }
 
-                    final Component desc = Component.translatable("tooltip.itemstages.item.description", TextHelper.join(sep, stages)).withStyle(ChatFormatting.GRAY);
+                    //TODO TextHelper.join in game-stages mod!
+                    final Component desc = Component.translatable("tooltip.itemstages.item.description", ISTextHelper.join(sep, stages)).withStyle(ChatFormatting.GRAY);
                     event.getToolTip().add(desc);
                     
                     if (restriction.shouldPreventInventory()) {

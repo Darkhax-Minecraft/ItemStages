@@ -11,7 +11,7 @@ import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker.api.ingredient.IIngredient;
 import com.blamejared.crafttweaker.api.item.MCItemStack;
 import com.blamejared.crafttweaker.api.zencode.util.PositionUtil;
-import net.minecraft.core.Registry;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.openzen.zencode.java.ZenCodeType;
 
 import com.blamejared.crafttweaker.api.item.IItemStack;
@@ -56,14 +56,14 @@ public class ZenItemStages {
     @ZenCodeType.Method
     public static Restriction createModRestriction (String modid, @Nullable Predicate<IItemStack> filter, String... requiredStages) {
 
-        return restrictInternal(stack -> modid.equalsIgnoreCase(Registry.ITEM.getKey(stack.getItem()).getNamespace()) && (filter == null || !filter.test(new MCItemStack(stack))), requiredStages);
+        return restrictInternal(stack -> modid.equalsIgnoreCase(ForgeRegistries.ITEMS.getKey(stack.getItem()).getNamespace()) && (filter == null || !filter.test(new MCItemStack(stack))), requiredStages);
     }
     
     @ZenCodeType.Method
     public static Restriction createModRestriction (String[] modids, @Nullable Predicate<IItemStack> filter, String... requiredStages) {
         
         final Set<String> restrictedModIds = Arrays.stream(modids).collect(Collectors.toSet());
-        return restrictInternal(stack -> restrictedModIds.contains(Registry.ITEM.getKey(stack.getItem()).getNamespace()) && (filter == null || !filter.test(new MCItemStack(stack))), requiredStages);
+        return restrictInternal(stack -> restrictedModIds.contains(ForgeRegistries.ITEMS.getKey(stack.getItem()).getNamespace()) && (filter == null || !filter.test(new MCItemStack(stack))), requiredStages);
     }
     
     @ZenCodeType.Method
