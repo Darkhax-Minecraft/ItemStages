@@ -26,6 +26,11 @@ public final class ActionCreateRestriction implements IRuntimeAction {
         return "[ItemStages] Creating new restriction for stages " + this.toRegister.getStages() + ".";
     }
 
+    @Override
+    public String systemName() {
+        return "Item Stages Restrictions";
+    }
+
     public static void apply (Restriction toRegister) {
         
         CraftTweakerAPI.apply(new ActionCreateRestriction(toRegister));
