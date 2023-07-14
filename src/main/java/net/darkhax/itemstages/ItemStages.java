@@ -109,7 +109,7 @@ public class ItemStages {
     
     private void onPlayerTick (TickEvent.PlayerTickEvent event) {
         
-        if (event.phase == Phase.START && event.player != null && !event.player.level.isClientSide && !(event.player instanceof FakePlayer)) {
+        if (event.phase == Phase.START && event.player != null && !event.player.level().isClientSide && !(event.player instanceof FakePlayer)) {
             
             final Player player = event.player;
             final IStageData stageData = GameStageHelper.getPlayerData(player);
@@ -238,6 +238,6 @@ public class ItemStages {
     
     private boolean canAffectPlayer (Player player) {
         
-        return player != null && !player.level.isClientSide && !(player instanceof FakePlayer);
+        return player != null && !player.level().isClientSide && !(player instanceof FakePlayer);
     }
 }

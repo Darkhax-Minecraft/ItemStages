@@ -6,16 +6,12 @@ repositories {
 
         url 'https://maven.blamejared.com'
     }
-    
-    maven {
-        url "https://dvs1.progwml6.com/files/maven"
-    }
 }
 
 dependencies {
 
-    implementation fg.deobf(group: 'net.darkhax.bookshelf', name: "Bookshelf-Forge-${minecraft_version}", version: getProperty('bookshelf_version'))
-    implementation fg.deobf(group: 'net.darkhax.gamestages', name: "GameStages-Forge-${minecraft_version}", version: getProperty('gamestages_version'))
-    implementation fg.deobf(group: 'com.blamejared.crafttweaker', name: "CraftTweaker-forge-${minecraft_version}", version: getProperty('crafttweaker_version'))
-    implementation fg.deobf(group: 'mezz.jei', name: "jei-${minecraft_version}-forge", version: getProperty('jei_version'))
+    implementation fg.deobf(group: 'net.darkhax.bookshelf', name: 'Bookshelf-Forge-1.20', version: getProperty('bookshelf_version'))
+    implementation fg.deobf(group: 'net.darkhax.gamestages', name: 'GameStages-Forge-1.20', version: getProperty('gamestages_version'))
+    implementation fg.deobf(group: 'com.blamejared.crafttweaker', name: 'CraftTweaker-forge-1.20', version: getProperty('crafttweaker_version'))
+    implementation fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 }
