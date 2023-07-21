@@ -199,8 +199,7 @@ public class ItemStages {
                         stages.add(Component.literal(stage).withStyle(data.hasStage(stage) ? ChatFormatting.GREEN : ChatFormatting.RED));
                     }
 
-                    //TODO TextUtils.join(sep, stages)
-                    final Component desc = Component.translatable("tooltip.itemstages.item.description", TextHelper.lookupTranslation(String.valueOf(sep), stages)).withStyle(ChatFormatting.GRAY);
+                    final Component desc = Component.translatable("tooltip.itemstages.item.description", TextHelper.join(sep, stages)).withStyle(ChatFormatting.GRAY);
                     event.getToolTip().add(desc);
                     
                     if (restriction.shouldPreventInventory()) {
