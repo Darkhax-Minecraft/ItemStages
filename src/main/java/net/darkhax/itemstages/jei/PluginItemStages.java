@@ -24,6 +24,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.util.thread.EffectiveSide;
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +46,7 @@ public class PluginItemStages implements IModPlugin {
             
             MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, StagesSyncedEvent.class, e -> this.updateHiddenItems());
             MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, RecipesUpdatedEvent.class, e -> this.updateHiddenItems());
+            MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, TagsUpdatedEvent.class, e -> this.updateHiddenItems());
         }
     }
     
