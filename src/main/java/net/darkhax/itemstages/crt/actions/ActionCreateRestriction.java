@@ -1,7 +1,9 @@
 package net.darkhax.itemstages.crt.actions;
 
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
+import com.blamejared.crafttweaker.api.CraftTweakerConstants;
 import com.blamejared.crafttweaker.api.action.base.IRuntimeAction;
+import com.blamejared.crafttweaker.api.zencode.IScriptLoadSource;
 import net.darkhax.itemstages.Restriction;
 import net.darkhax.itemstages.RestrictionManager;
 
@@ -29,5 +31,11 @@ public final class ActionCreateRestriction implements IRuntimeAction {
     public static void apply (Restriction toRegister) {
         
         CraftTweakerAPI.apply(new ActionCreateRestriction(toRegister));
+    }
+
+    @Override
+    public boolean shouldApplyOn(final IScriptLoadSource source) {
+
+        return true;
     }
 }
