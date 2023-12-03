@@ -1,0 +1,16 @@
+{
+    "tooltip.itemstages.hidden_name": "Незнакомый предмет",
+    "tooltip.itemstages.item.description": "Этот предмет был передан в [%s]",
+    "message.itemstages.drop": "Вы уронили %s.",
+    "message.itemstages.mine": "Вы не знаете, как майнить с помощью %s.",
+    "message.itemstages.attack": "Вы не знаете, как атаковать %s.",
+    "message.itemstages.use": "Вы не знаете, как использовать %s.",
+    "message.itemstages.pickup": "Вы не смогли забрать %s.",
+    
+    "tooltip.itemstages.debug.drop": "- Этот предмет будет выброшен из инвентаря.",
+    "tooltip.itemstages.debug.pickup": "- Этот предмет невозможно подобрать.",
+    "tooltip.itemstages.debug.use": "- Этот элемент нельзя использовать для блоков или сущностей.",
+    "tooltip.itemstages.debug.attack": "- Этот предмет нельзя использовать в качестве оружия.",
+    "tooltip.itemstages.debug.jei": "- Этот элемент будет скрыт в JEI",
+    "itemstages.hidden_name": "Не такой уж незнакомый предмет"
+}
