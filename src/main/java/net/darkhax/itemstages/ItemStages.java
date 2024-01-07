@@ -3,11 +3,11 @@ package net.darkhax.itemstages;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.darkhax.bookshelf.api.util.TextHelper;
 import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.gamestages.data.GameStageSaveHandler;
 import net.darkhax.gamestages.data.IStageData;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +15,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -109,7 +108,7 @@ public class ItemStages {
     
     private void onPlayerTick (TickEvent.PlayerTickEvent event) {
         
-        if (event.phase == Phase.START && event.player != null && !event.player.level().isClientSide && !(event.player instanceof FakePlayer)) {
+        if (event.phase == Phase.START && event.player != null && !event.player.level().isClientSide && event.player.getClass() == ServerPlayer.class) {
             
             final Player player = event.player;
             final IStageData stageData = GameStageHelper.getPlayerData(player);
@@ -238,6 +237,6 @@ public class ItemStages {
     
     private boolean canAffectPlayer (Player player) {
         
-        return player != null && !player.level().isClientSide && !(player instanceof FakePlayer);
+        return player != null && !player.level().isClientSide && player.getClass() == ServerPlayer.class;
     }
 }
