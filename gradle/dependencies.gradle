@@ -13,5 +13,5 @@ dependencies {
     implementation fg.deobf(group: 'net.darkhax.bookshelf', name: "Bookshelf-Forge-${minecraft_version}", version: getProperty('bookshelf_version'))
     implementation fg.deobf(group: 'net.darkhax.gamestages', name: "GameStages-Forge-${minecraft_version}", version: getProperty('gamestages_version'))
     implementation fg.deobf(group: 'com.blamejared.crafttweaker', name: "CraftTweaker-forge-${minecraft_version}", version: getProperty('crafttweaker_version'))
-    implementation fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    //implementation fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 }
