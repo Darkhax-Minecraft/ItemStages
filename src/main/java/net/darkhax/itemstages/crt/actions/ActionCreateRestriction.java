@@ -2,6 +2,7 @@ package net.darkhax.itemstages.crt.actions;
 
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
 import com.blamejared.crafttweaker.api.action.base.IRuntimeAction;
+import com.blamejared.crafttweaker.api.zencode.IScriptLoadSource;
 import net.darkhax.itemstages.Restriction;
 import net.darkhax.itemstages.RestrictionManager;
 
@@ -24,6 +25,12 @@ public final class ActionCreateRestriction implements IRuntimeAction {
     public String describe () {
         
         return "[ItemStages] Creating new restriction for stages " + this.toRegister.getStages() + ".";
+    }
+
+    @Override
+    public boolean shouldApplyOn(final IScriptLoadSource source) {
+
+        return true;
     }
 
     public static void apply (Restriction toRegister) {
